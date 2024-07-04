@@ -6,6 +6,7 @@ import React, { useEffect, useState } from "react";
 type CourseListProps = {
   courses: { title: string; description: string; image: string }[];
 };
+
 export default function CourseList() {
   const [courseList, setCourseList] = useState<CourseListProps["courses"]>([]);
   const fetchCourses = async () => {
