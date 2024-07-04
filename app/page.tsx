@@ -5,7 +5,6 @@ import CourseList from "./components/CourseList";
 export default function Home() {
   return (
     <>
-      <Navbar />
       <div className="container mx-auto p-4">
         <main className="mt-8">
           <Categories />

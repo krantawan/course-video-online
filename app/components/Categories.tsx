@@ -2,14 +2,16 @@ export default function Categories() {
   const categories = ["Web Development", "Data Science", "Design", "Marketing"];
   return (
     <div className="my-8">
-      <h2 className="text-2xl font-bold mb-4">Categories</h2>
-      <ul className="space-y-2">
+      <div>
         {categories.map((category) => (
-          <li key={category} className="bg-gray-100 p-2 rounded">
+          <div
+            key={category}
+            className="inline-flex items-center rounded-md bg-gray-50 px-2 py-1 text-xs font-medium text-gray-600 ring-1 ring-inset ring-gray-500/10 mr-2"
+          >
             {category}
-          </li>
+          </div>
         ))}
-      </ul>
+      </div>
     </div>
   );
 }
