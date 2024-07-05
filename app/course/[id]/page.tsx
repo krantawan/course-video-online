@@ -1,8 +1,27 @@
 "use client";
-import { useParams } from "next/navigation";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 
-export default function Courses() {
-  const { id } = useParams<{ id: string }>();
+export default function Courses({ params }: { params: { id: string } }) {
+  const { id } = params;
+  const [title, setTitle] = useState("");
+  const [imageCourse, setImageCourse] = useState("");
+
+  const fetchCoursebyId = async (id: string) => {
+    try {
+      const response = await axios.get(`/api/Courses/${id}`);
+      setTitle(response.data.title);
+      setImageCourse(response.data.image);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    if (id) {
+      fetchCoursebyId(id);
+    }
+  }, [id]);
   return (
     <div className="container mx-auto">
       <nav className="flex" aria-label="Breadcrumb">
@@ -35,9 +54,9 @@ export default function Courses() {
               >
                 <path
                   stroke="currentColor"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
                   d="m1 9 4-4-4-4"
                 />
               </svg>
@@ -60,24 +79,24 @@ export default function Courses() {
               >
                 <path
                   stroke="currentColor"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
                   d="m1 9 4-4-4-4"
                 />
               </svg>
               <span className="ms-1 text-sm font-medium text-gray-500 md:ms-2">
-                React for Beginners
+                {title}
               </span>
             </div>
           </li>
         </ol>
       </nav>
-      <h2 className="text-2xl font-bold mb-4">React for Beginners</h2>
+      <h2 className="text-2xl font-bold mb-4">{title}</h2>
       <div className="grid grid-cols-[30%,70%]">
         <div className="pr-5">
           <img
-            src="https://i.imgur.com/rvjKcka.png"
+            src={imageCourse}
             alt="card-image"
             className="object-cover w-fullrounded-md"
           />
