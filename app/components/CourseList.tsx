@@ -4,8 +4,9 @@ import Link from "next/link";
 import React, { useEffect, useState } from "react";
 
 type CourseListProps = {
-  courses: { title: string; description: string; image: string }[];
+  courses: { id: number; title: string; description: string; image: string }[];
 };
+
 export default function CourseList() {
   const [courseList, setCourseList] = useState<CourseListProps["courses"]>([]);
   const fetchCourses = async () => {
@@ -20,16 +21,6 @@ export default function CourseList() {
   useEffect(() => {
     fetchCourses();
   }, []);
-
-  // Mock data
-  //   const courses = [
-  //     { title: "React for Beginners", description: "Learn the basics of React." },
-  //     { title: "Advanced JavaScript", description: "Master JavaScript." },
-  //     {
-  //       title: "UI/UX Design Principles",
-  //       description: "Design beautiful interfaces.",
-  //     },
-  //   ];
 
   return (
     <div className="my-8">
@@ -58,12 +49,13 @@ export default function CourseList() {
               </p>
             </div>
             <div className="p-6 pt-0">
-              <button
+              <Link
+                href={`/course/${course.id}`}
                 className="text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700 w-full"
                 type="button"
               >
                 View details
-              </button>
+              </Link>
             </div>
           </div>
         ))}

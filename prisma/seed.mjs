@@ -1,15 +1,16 @@
 // prisma/seed.mjs
+
 import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
 async function main() {
-  // Create mock users
+  // Create sample users
   const user1 = await prisma.user.create({
     data: {
       name: "Alice",
       email: "alice@example.com",
-      password: "password123",
+      password: "alice123", // Ensure to hash passwords in a real application
     },
   });
 
@@ -17,49 +18,74 @@ async function main() {
     data: {
       name: "Bob",
       email: "bob@example.com",
-      password: "password123",
+      password: "bob123", // Ensure to hash passwords in a real application
     },
   });
 
-  // Create mock video courses for user1
-  await prisma.videoCourse.createMany({
-    data: [
-      {
-        title: "React for Beginners",
-        description: "Learn the basics of React.",
-        image: "react-course.jpg",
-        videoUrl: "https://example.com/react-course",
-        userId: user1.id,
+  // Create sample courses
+  const course1 = await prisma.course.create({
+    data: {
+      title: "React Basics",
+      description: "Learn the basics of React.",
+      image: "react_basics.png",
+      courseSessions: {
+        create: [
+          {
+            title: "Introduction to React",
+            videoUrl: "https://example.com/video1",
+          },
+          {
+            title: "React Components",
+            videoUrl: "https://example.com/video2",
+          },
+        ],
       },
-      {
-        title: "Advanced JavaScript",
-        description: "Master JavaScript.",
-        image: "js-course.jpg",
-        videoUrl: "https://example.com/js-course",
-        userId: user1.id,
-      },
-    ],
+    },
   });
 
-  // Create mock video courses for user2
-  await prisma.videoCourse.createMany({
-    data: [
-      {
-        title: "UI/UX Design Principles",
-        description: "Design beautiful interfaces.",
-        image: "design-course.jpg",
-        videoUrl: "https://example.com/design-course",
-        userId: user2.id,
+  const course2 = await prisma.course.create({
+    data: {
+      title: "Advanced React",
+      description: "Learn advanced concepts of React.",
+      image: "advanced_react.png",
+      courseSessions: {
+        create: [
+          {
+            title: "React Hooks",
+            videoUrl: "https://example.com/video3",
+          },
+          {
+            title: "React Context API",
+            videoUrl: "https://example.com/video4",
+          },
+        ],
       },
-      {
-        title: "Marketing Strategies",
-        description: "Learn effective marketing strategies.",
-        image: "marketing-course.jpg",
-        videoUrl: "https://example.com/marketing-course",
-        userId: user2.id,
-      },
-    ],
+    },
   });
+
+  // Enroll users in courses
+  await prisma.courseEnrollment.create({
+    data: {
+      userId: user1.id,
+      courseId: course1.id,
+    },
+  });
+
+  await prisma.courseEnrollment.create({
+    data: {
+      userId: user2.id,
+      courseId: course2.id,
+    },
+  });
+
+  await prisma.courseEnrollment.create({
+    data: {
+      userId: user1.id,
+      courseId: course2.id,
+    },
+  });
+
+  console.log("Database has been seeded. 🌱");
 }
 
 main()
