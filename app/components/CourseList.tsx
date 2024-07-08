@@ -22,16 +22,6 @@ export default function CourseList() {
     fetchCourses();
   }, []);
 
-  // Mock data
-  //   const courses = [
-  //     { title: "React for Beginners", description: "Learn the basics of React." },
-  //     { title: "Advanced JavaScript", description: "Master JavaScript." },
-  //     {
-  //       title: "UI/UX Design Principles",
-  //       description: "Design beautiful interfaces.",
-  //     },
-  //   ];
-
   return (
     <div className="my-8">
       <h2 className="text-2xl font-bold mb-4">Course Videos</h2>

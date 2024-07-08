@@ -115,28 +115,37 @@ export default function Courses({ params }: { params: { id: string } }) {
         </div>
         <div className="pl-5 gap-5">
           <div>
-            Session: 1 Introduce
+            Session: 1 Getting Started
+            <div className="bg-slate-50 p-5 mb-2">Welcome To The Course!</div>
+            <div className="bg-slate-50 p-5 mb-2">
+              What is React.js? And Why Would You Use It?
+            </div>
+            <div className="bg-slate-50 p-5 mb-2">
+              Build Our First React App!
+            </div>
+          </div>
+
+          <div>
+            Session: 2 Tool
+            <div className="bg-slate-50 p-5 mb-2">
+              Install Visual Studio Code
+            </div>
+            <div className="bg-slate-50 p-5 mb-2">Install Node.js</div>
+            <div className="bg-slate-50 p-5 mb-2">Install Nodemon</div>
+            <div className="bg-slate-50 p-5 mb-2">
+              npm (Node Package Manager)
+            </div>
+          </div>
+
+          <div>
+            Session: 3 Introduce
             <div className="bg-slate-50 p-5 mb-2">1</div>
             <div className="bg-slate-50 p-5 mb-2">1</div>
             <div className="bg-slate-50 p-5 mb-2">1</div>
           </div>
 
           <div>
-            Session: 2 Introduce
-            <div className="bg-slate-50 p-5 mb-2">1</div>
-            <div className="bg-slate-50 p-5 mb-2">1</div>
-            <div className="bg-slate-50 p-5 mb-2">1</div>
-          </div>
-
-          <div>
-            Session: 2 Introduce
-            <div className="bg-slate-50 p-5 mb-2">1</div>
-            <div className="bg-slate-50 p-5 mb-2">1</div>
-            <div className="bg-slate-50 p-5 mb-2">1</div>
-          </div>
-
-          <div>
-            Session: 2 Introduce
+            Session: 4 Introduce
             <div className="bg-slate-50 p-5 mb-2">1</div>
             <div className="bg-slate-50 p-5 mb-2">1</div>
             <div className="bg-slate-50 p-5 mb-2">1</div>
