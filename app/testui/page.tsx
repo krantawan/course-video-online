@@ -1,29 +1,4 @@
-"use client";
-import React, { useEffect, useState } from "react";
-import axios from "axios";
-
-export default function Courses({ params }: { params: { id: string } }) {
-  const { id } = params;
-  const [course, setCourse] = useState<any>();
-
-  const fetchCourseById = async (id: string) => {
-    try {
-      const response = await axios.get(`/api/Courses/${id}`);
-      setCourse(response.data);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  useEffect(() => {
-    if (id) {
-      fetchCourseById(id);
-    }
-  }, [id]);
-
-  if (!course) {
-    return <div>Loading...</div>;
-  }
+export default function Page() {
   return (
     <div className="flex flex-col min-h-screen">
       <section className="w-full py-12 md:py-24 lg:py-32 bg-gray-100">
@@ -33,10 +8,11 @@ export default function Courses({ params }: { params: { id: string } }) {
               Course Video
             </div>
             <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
-              {course.title}
+              Introduction to React.js
             </h1>
             <p className="max-w-lg text-gray-600 md:text-xl lg:text-base xl:text-xl">
-              {course.description}
+              Learn the fundamentals of React.js, one of the most popular
+              JavaScript libraries for building user interfaces.
             </p>
           </div>
           <div className="relative aspect-video rounded-lg overflow-hidden">
@@ -73,30 +49,18 @@ export default function Courses({ params }: { params: { id: string } }) {
             <div>
               <h2 className="text-2xl font-bold">Course Curriculum</h2>
               <div className="mt-6 grid gap-4">
-                {course.courseSessions.map(
-                  (sessionCourse: {
-                    title: string;
-                    description: string;
-                    duration: string;
-                  }) => (
-                    <div
-                      key=""
-                      className="grid grid-cols-[1fr_auto] items-center gap-4 rounded-lg bg-gray-100 p-4"
-                    >
-                      <div>
-                        <h3 className="text-lg font-semibold">
-                          {sessionCourse.title}
-                        </h3>
-                        <p className="text-gray-600">
-                          {sessionCourse.description}
-                        </p>
-                      </div>
-                      <div className="text-gray-600">
-                        {sessionCourse.duration}
-                      </div>
+                {curriculumItems.map((item, index) => (
+                  <div
+                    key={index}
+                    className="grid grid-cols-[1fr_auto] items-center gap-4 rounded-lg bg-gray-100 p-4"
+                  >
+                    <div>
+                      <h3 className="text-lg font-semibold">{item.title}</h3>
+                      <p className="text-gray-600">{item.description}</p>
                     </div>
-                  )
-                )}
+                    <div className="text-gray-600">{item.duration}</div>
+                  </div>
+                ))}
               </div>
             </div>
             <div>
@@ -147,6 +111,40 @@ export default function Courses({ params }: { params: { id: string } }) {
     </div>
   );
 }
+
+const curriculumItems = [
+  {
+    title: "Introduction to React.js",
+    description:
+      "Learn the basics of React.js and how to set up a development environment.",
+    duration: "15 min",
+  },
+  {
+    title: "Components and Props",
+    description:
+      "Understand the concept of components and how to pass data between them using props.",
+    duration: "30 min",
+  },
+  {
+    title: "State Management",
+    description:
+      "Learn how to manage the state of your React.js application using hooks and state management techniques.",
+    duration: "45 min",
+  },
+  {
+    title: "Routing",
+    description:
+      "Understand how to set up client-side routing in your React.js application using React Router.",
+    duration: "30 min",
+  },
+  {
+    title: "Fetching Data with APIs",
+    description:
+      "Learn how to fetch data from APIs and display it in your React.js application.",
+    duration: "45 min",
+  },
+];
+
 const reviews = [
   {
     stars: 4.5,

@@ -13,6 +13,7 @@ model User {
   email            String            @unique
   password         String?
   image            String?
+  role             String            @default("member")
   createdAt        DateTime          @default(now())
   updatedAt        DateTime          @default(now()) @updatedAt
   enrollments      CourseEnrollment[]
@@ -71,6 +72,8 @@ model CourseSession {
   id               Int               @id @default(autoincrement())
   title            String
   videoUrl         String
+  description      String
+  duration         String
   courseId         Int
   course           Course            @relation(fields: [courseId], references: [id])
 }

@@ -7,11 +7,24 @@ export async function GET(
 ) {
   try {
     const courseId = Number(params.id);
-    const courses = await prisma.videoCourse.findUnique({
+    const course = await prisma.course.findUnique({
       where: {
         id: courseId,
       },
+      include: {
+        courseSessions: true,
+      },
     });
-    return Response.json(courses);
-  } catch (error) {}
+
+    if (!course) {
+      throw {
+        status: 404,
+        message: "Course not found.",
+      };
+    }
+
+    return Response.json(course);
+  } catch (error) {
+    console.log(error);
+  }
 }
