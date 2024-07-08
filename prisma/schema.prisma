@@ -8,32 +8,32 @@ datasource db {
 }
 
 model User {
-  id               Int               @id @default(autoincrement())
-  name             String?
-  email            String            @unique
-  password         String?
-  image            String?
-  role             String            @default("member")
-  createdAt        DateTime          @default(now())
-  updatedAt        DateTime          @default(now()) @updatedAt
-  enrollments      CourseEnrollment[]
-  accounts         Account[]
-  sessions         Session[]
+  id          Int                @id @default(autoincrement())
+  name        String?
+  email       String             @unique
+  password    String?
+  image       String?
+  role        String             @default("member")
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @default(now()) @updatedAt
+  enrollments CourseEnrollment[]
+  accounts    Account[]
+  sessions    Session[]
 }
 
 model Account {
-  id                 Int       @id @default(autoincrement())
-  userId             Int
-  type               String
-  provider           String
-  providerAccountId  String
-  refresh_token      String?   @db.Text
-  access_token       String?   @db.Text
-  expires_at         Int?
-  token_type         String?
-  scope              String?
-  id_token           String?   @db.Text
-  session_state      String?
+  id                Int     @id @default(autoincrement())
+  userId            Int
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
 
   user User @relation(fields: [userId], references: [id])
 
@@ -41,8 +41,8 @@ model Account {
 }
 
 model Session {
-  id           Int       @id @default(autoincrement())
-  sessionToken String    @unique
+  id           Int      @id @default(autoincrement())
+  sessionToken String   @unique
   userId       Int
   expires      DateTime
 
@@ -51,40 +51,40 @@ model Session {
 
 model VerificationToken {
   identifier String
-  token      String    @unique
+  token      String   @unique
   expires    DateTime
 
   @@unique([identifier, token])
 }
 
 model Course {
-  id               Int               @id @default(autoincrement())
-  title            String
-  description      String
-  image            String
-  createdAt        DateTime          @default(now())
-  updatedAt        DateTime          @updatedAt
-  courseSessions   CourseSession[]
-  enrollments      CourseEnrollment[]
+  id             Int                @id @default(autoincrement())
+  title          String
+  description    String
+  image          String
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+  courseSessions CourseSession[]
+  enrollments    CourseEnrollment[]
 }
 
 model CourseSession {
-  id               Int               @id @default(autoincrement())
-  title            String
-  videoUrl         String
-  description      String
-  duration         String
-  courseId         Int
-  course           Course            @relation(fields: [courseId], references: [id])
+  id          Int     @id @default(autoincrement())
+  title       String
+  videoUrl    String
+  description String?
+  duration    String?
+  courseId    Int
+  course      Course  @relation(fields: [courseId], references: [id])
 }
 
 model CourseEnrollment {
-  id               Int               @id @default(autoincrement())
-  userId           Int
-  courseId         Int
-  createdAt        DateTime          @default(now())
-  user             User              @relation(fields: [userId], references: [id])
-  course           Course            @relation(fields: [courseId], references: [id])
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  courseId  Int
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+  course    Course   @relation(fields: [courseId], references: [id])
 
   @@unique([userId, courseId])
 }

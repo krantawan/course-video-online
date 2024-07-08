@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import Link from "next/link";
 
 export default function Courses({ params }: { params: { id: string } }) {
   const { id } = params;
@@ -74,27 +75,33 @@ export default function Courses({ params }: { params: { id: string } }) {
               <h2 className="text-2xl font-bold">Course Curriculum</h2>
               <div className="mt-6 grid gap-4">
                 {course.courseSessions.map(
-                  (sessionCourse: {
-                    title: string;
-                    description: string;
-                    duration: string;
-                  }) => (
-                    <div
-                      key=""
-                      className="grid grid-cols-[1fr_auto] items-center gap-4 rounded-lg bg-gray-100 p-4"
+                  (
+                    sessionCourse: {
+                      id: number;
+                      title: string;
+                      description: string;
+                      duration: string;
+                    },
+                    index: number
+                  ) => (
+                    <Link
+                      href={`/video/${sessionCourse.id}`}
+                      key={index + "_" + sessionCourse.title}
                     >
-                      <div>
-                        <h3 className="text-lg font-semibold">
-                          {sessionCourse.title}
-                        </h3>
-                        <p className="text-gray-600">
-                          {sessionCourse.description}
-                        </p>
+                      <div className="grid grid-cols-[1fr_auto] items-center gap-4 rounded-lg bg-gray-100 p-4">
+                        <div>
+                          <h3 className="text-lg font-semibold">
+                            {sessionCourse.title}
+                          </h3>
+                          <p className="text-gray-600">
+                            {sessionCourse.description}
+                          </p>
+                        </div>
+                        <div className="text-gray-600">
+                          {sessionCourse.duration}
+                        </div>
                       </div>
-                      <div className="text-gray-600">
-                        {sessionCourse.duration}
-                      </div>
-                    </div>
+                    </Link>
                   )
                 )}
               </div>
