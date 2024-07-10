@@ -9,7 +9,7 @@
     "lint": "next lint",
     "migrate": "prisma migrate dev --name init",
     "generate": "prisma generate",
-    "seed": "node prisma/seed.mjs"
+    "seed": "node prisma/seed-review.mjs"
   },
   "type": "module",
   "dependencies": {

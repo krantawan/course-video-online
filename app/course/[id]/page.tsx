@@ -11,6 +11,7 @@ export default function Courses({ params }: { params: { id: string } }) {
     try {
       const response = await axios.get(`/api/Courses/${id}`);
       setCourse(response.data);
+      console.log(response.data);
     } catch (error) {
       console.log(error);
     }
@@ -48,22 +49,7 @@ export default function Courses({ params }: { params: { id: string } }) {
               />
             </video>
             <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-              <button className="text-white">
-                <svg
-                  className="w-10 h-10"
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <polygon points="6 3 20 12 6 21 6 3" />
-                </svg>
-              </button>
+              d
             </div>
           </div>
         </div>
@@ -126,26 +112,36 @@ export default function Courses({ params }: { params: { id: string } }) {
             <div>
               <h2 className="text-2xl font-bold">Reviews</h2>
               <div className="mt-6 grid gap-6">
-                {reviews.map((review, index) => (
-                  <div
-                    key={index}
-                    className="grid grid-cols-[auto_1fr] items-start gap-4 rounded-lg bg-gray-200 p-4"
-                  >
-                    <div>avatar</div>
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <div className="flex items-center gap-0.5"></div>
-                        <div className="text-sm text-gray-600">
-                          {review.rating} out of 5
+                {course.reviews.map(
+                  (
+                    review: {
+                      id: number;
+                      comment: string;
+                      rating: number;
+                      User: { id: number; name: string };
+                    },
+                    index: number
+                  ) => (
+                    <div
+                      key={index}
+                      className="grid grid-cols-[auto_1fr] items-start gap-4 rounded-lg bg-gray-200 p-4"
+                    >
+                      <div>avatar</div>
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-0.5"></div>
+                          <div className="text-sm text-gray-600">
+                            {review.rating} out of 5
+                          </div>
+                        </div>
+                        <p className="mt-2">{review.comment}</p>
+                        <div className="mt-2 text-sm text-gray-600">
+                          - {review.User.name}
                         </div>
                       </div>
-                      <p className="mt-2">{review.text}</p>
-                      <div className="mt-2 text-sm text-gray-600">
-                        - {review.author}
-                      </div>
                     </div>
-                  </div>
-                ))}
+                  )
+                )}
               </div>
             </div>
           </div>
@@ -154,23 +150,3 @@ export default function Courses({ params }: { params: { id: string } }) {
     </div>
   );
 }
-const reviews = [
-  {
-    stars: 4.5,
-    rating: "4.5",
-    text: "This course is amazing! The instructor explains everything clearly and the examples are really helpful. I highly recommend it to anyone who wants to learn React.js.",
-    author: "John Doe",
-  },
-  {
-    stars: 5,
-    rating: "5",
-    text: "This is the best React.js course I've ever taken. The instructor is knowledgeable and the content is well-structured. I feel confident in my React.js skills after completing this course.",
-    author: "Jane Smith",
-  },
-  {
-    stars: 3.5,
-    rating: "3.5",
-    text: "The course is good, but I felt that some topics were covered too quickly. I would have liked more hands-on exercises and examples.",
-    author: "Sarah Lee",
-  },
-];

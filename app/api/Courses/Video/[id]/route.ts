@@ -6,18 +6,14 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
-    const courseId = Number(params.id);
-    const course = await prisma.course.findUnique({
+    const videoId = Number(params.id);
+    const course = await prisma.courseSession.findUnique({
       where: {
-        id: courseId,
+        id: videoId,
+        //courseId: videoId,
       },
       include: {
-        courseSessions: true,
-        reviews: {
-          include: {
-            User: true,
-          },
-        },
+        course: true,
       },
     });
 
@@ -27,8 +23,6 @@ export async function GET(
         message: "Course not found.",
       };
     }
-
-    console.log(course);
 
     return Response.json(course);
   } catch (error) {

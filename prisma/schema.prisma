@@ -19,6 +19,7 @@ model User {
   enrollments CourseEnrollment[]
   accounts    Account[]
   sessions    Session[]
+  reviews     Review[]
 }
 
 model Account {
@@ -66,6 +67,7 @@ model Course {
   updatedAt      DateTime           @updatedAt
   courseSessions CourseSession[]
   enrollments    CourseEnrollment[]
+  reviews        Review[]
 }
 
 model CourseSession {
@@ -87,4 +89,15 @@ model CourseEnrollment {
   course    Course   @relation(fields: [courseId], references: [id])
 
   @@unique([userId, courseId])
+}
+
+model Review {
+  id        Int      @id @default(autoincrement())
+  rating    Int
+  comment   String
+  courseId  Int
+  createdAt DateTime @default(now())
+  course    Course   @relation(fields: [courseId], references: [id])
+  User      User?    @relation(fields: [userId], references: [id])
+  userId    Int?
 }
