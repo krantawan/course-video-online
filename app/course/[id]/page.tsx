@@ -2,6 +2,8 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Link from "next/link";
+import Image from "next/image";
+import Avatar from "/public/avatar_default.png";
 
 export default function Courses({ params }: { params: { id: string } }) {
   const { id } = params;
@@ -11,7 +13,7 @@ export default function Courses({ params }: { params: { id: string } }) {
     try {
       const response = await axios.get(`/api/Courses/${id}`);
       setCourse(response.data);
-      console.log(response.data);
+      //console.log(response.data);
     } catch (error) {
       console.log(error);
     }
@@ -28,28 +30,33 @@ export default function Courses({ params }: { params: { id: string } }) {
   }
   return (
     <div className="flex flex-col min-h-screen">
-      <section className="w-full py-12 md:py-24 lg:py-32 bg-gray-100">
+      <section className="w-full py-12 md:py-24 lg:py-32 bg-black bg-opacity-95">
         <div className="container grid gap-10 px-4 md:px-6 lg:grid-cols-2 lg:gap-20 mx-auto">
           <div className="space-y-4">
-            <div className="inline-block rounded-lg bg-black px-3 py-1 text-sm text-white">
+            <div className="inline-block rounded-lg bg-white px-3 py-1 text-sm text-black">
               Course Video
             </div>
-            <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
+            <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl text-white text-opacity-95">
               {course.title}
             </h1>
-            <p className="max-w-lg text-gray-600 md:text-xl lg:text-base xl:text-xl">
+            <p className="max-w-lg text-gray-300 md:text-xl lg:text-base xl:text-xl text-justify">
               {course.description}
             </p>
           </div>
           <div className="relative aspect-video rounded-lg overflow-hidden">
-            <video className="w-full h-full object-cover">
-              <source
-                src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
-                type="video/mp4"
-              />
-            </video>
-            <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-              d
+            <div className="w-full h-full object-cover">
+              <iframe
+                width="560"
+                height="315"
+                src={`https://www.youtube.com/embed/${
+                  course.preview == null ? "" : course.preview
+                }`}
+                title="YouTube video player"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                referrerPolicy="strict-origin-when-cross-origin"
+                allowFullScreen
+                className="w-full h-full"
+              ></iframe>
             </div>
           </div>
         </div>
@@ -77,9 +84,9 @@ export default function Courses({ params }: { params: { id: string } }) {
                       <div className="grid grid-cols-[1fr_auto] items-center gap-4 rounded-lg bg-gray-100 p-4">
                         <div>
                           <h3 className="text-lg font-semibold">
-                            {sessionCourse.title}
+                            {index + 1} - {sessionCourse.title}
                           </h3>
-                          <p className="text-gray-600">
+                          <p className="text-gray-600 text-justify">
                             {sessionCourse.description}
                           </p>
                         </div>
@@ -95,16 +102,19 @@ export default function Courses({ params }: { params: { id: string } }) {
             <div>
               <h2 className="text-2xl font-bold">Instructor</h2>
               <div className="mt-6 grid grid-cols-[auto_1fr] items-start gap-6">
-                <div>avatar</div>
+                <div>
+                  {course.Instructor.image ? (
+                    course.Instructor.image
+                  ) : (
+                    <Image src={Avatar} alt="avatar" width={100} height={100} />
+                  )}
+                </div>
                 <div>
                   <h3 className="text-lg font-semibold">
-                    Colm Tuite (a.k.a. shadcn)
+                    {course.Instructor.name}
                   </h3>
                   <p className="text-gray-600">
-                    Colm is a software engineer and the creator of the Shadcn UI
-                    library. He has been working with React.js for over 5 years
-                    and is passionate about building high-quality, accessible
-                    user interfaces.
+                    {course.Instructor.bio ? course.Instructor.bio : "No bio"}
                   </p>
                 </div>
               </div>
@@ -118,7 +128,7 @@ export default function Courses({ params }: { params: { id: string } }) {
                       id: number;
                       comment: string;
                       rating: number;
-                      User: { id: number; name: string };
+                      User: { id: number; name: string; image: string };
                     },
                     index: number
                   ) => (
@@ -126,7 +136,15 @@ export default function Courses({ params }: { params: { id: string } }) {
                       key={index}
                       className="grid grid-cols-[auto_1fr] items-start gap-4 rounded-lg bg-gray-200 p-4"
                     >
-                      <div>avatar</div>
+                      <div>
+                        {review.image ? (
+                          review.image
+                        ) : (
+                          <div className="relative w-10 h-10 overflow-hidden bg-gray-100 rounded-full dark:bg-gray-600">
+                            <Image src={Avatar} alt="avatar" />
+                          </div>
+                        )}
+                      </div>
                       <div>
                         <div className="flex items-center gap-2">
                           <div className="flex items-center gap-0.5"></div>

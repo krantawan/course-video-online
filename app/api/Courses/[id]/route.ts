@@ -13,6 +13,7 @@ export async function GET(
       },
       include: {
         courseSessions: true,
+        Instructor: true,
         reviews: {
           include: {
             User: true,
@@ -28,7 +29,7 @@ export async function GET(
       };
     }
 
-    console.log(course);
+    //console.log(course);
 
     return Response.json(course);
   } catch (error) {

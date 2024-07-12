@@ -1,21 +1,19 @@
 "use client";
 import Link from "next/link";
 import axios from "axios";
+import Image from "next/image";
+import Avatar from "/public/avatar_default.png";
 import { useEffect, useState } from "react";
 
 export default function VideoCourse({ params }: { params: { id: string } }) {
   const { id } = params;
   const [video, setVideo] = useState<any>("");
-  const [chapters, setChapters] = useState<any>();
 
   const fetchVideoById = async (id: string) => {
     try {
       const response = await axios.get(`/api/Courses/Video/${id}`);
       setVideo(response.data);
-
-      const courseId = response.data.courseId;
-      const res = await axios.get(`/api/Courses/${courseId}`);
-      setChapters(res.data);
+      //console.log(response.data);
     } catch (error) {
       console.log(error);
     }
@@ -30,7 +28,7 @@ export default function VideoCourse({ params }: { params: { id: string } }) {
   return (
     <div>
       <div className="container flex flex-col gap-8 w-full mx-auto py-12 px-4 md:px-6">
-        <div className="rounded-lg overflow-hidden aspect-video relative">
+        <div className="rounded-lg overflow-hidden aspect-video relative ">
           <div className="w-full h-full object-cover">
             <iframe
               width="560"
@@ -49,45 +47,49 @@ export default function VideoCourse({ params }: { params: { id: string } }) {
             <h1 className="text-3xl font-bold">{video.title}</h1>
             <div className="flex items-center gap-2 text-gray-500">
               <div className="w-8 h-8 rounded-full overflow-hidden bg-gray-300">
-                <img
-                  src=""
-                  alt="Avatar"
-                  className="w-full h-full object-cover"
-                />
+                {video.course?.Instructor?.image ? (
+                  video.course?.Instructor?.image
+                ) : (
+                  <Image
+                    src={Avatar}
+                    alt="Avatar"
+                    className="w-full h-full object-cover"
+                  />
+                )}
               </div>
-              <div>John Doe, Instructor</div>
+              <div>{video.course?.Instructor?.name}, Instructor</div>
             </div>
             <p className="mt-4 text-gray-500">{video.description}</p>
           </div>
           <div className="bg-gray-100 rounded-lg p-4">
             <h2 className="text-lg font-semibold">Chapters</h2>
             <div className="grid gap-4 mt-4">
-              {chapters?.courseSessions?.map((chapter: any, index: number) => (
-                <Link
-                  href={`/video/${chapter.id}`}
-                  className={`flex items-center gap-3 hover:bg-gray-200 rounded-md p-2 ${
-                    String(chapter.id) === String(id) ? "bg-gray-200" : ""
-                  }`}
-                  prefetch={false}
-                  key={index}
-                >
-                  <img
-                    src={`https://img.youtube.com/vi/${chapter.videoUrl}/mqdefault.jpg`}
-                    width={120}
-                    height={80}
-                    alt="Thumbnail"
-                    className="rounded-md object-cover"
-                  />
-                  <div>
-                    <div className="font-medium line-clamp-2">
-                      {chapter.title} {chapter.id}
+              {video?.course?.courseSessions?.map(
+                (chapter: any, index: number) => (
+                  <Link
+                    href={`/video/${chapter.id}`}
+                    className={`flex items-center gap-3 hover:bg-gray-200 rounded-md p-2 ${
+                      String(chapter.id) === String(id) ? "bg-gray-200" : ""
+                    }`}
+                    prefetch={false}
+                    key={index}
+                  >
+                    <img
+                      src={`https://img.youtube.com/vi/${chapter.videoUrl}/mqdefault.jpg`}
+                      width={120}
+                      height={80}
+                      alt="Thumbnail"
+                      className="rounded-md object-cover"
+                    />
+                    <div>
+                      <div className="font-medium line-clamp-2">
+                        {chapter.title} {chapter.id}
+                      </div>
+                      <div className="text-sm text-gray-500">{} • 45 min</div>
                     </div>
-                    <div className="text-sm text-gray-500">
-                      John Doe • 45 min
-                    </div>
-                  </div>
-                </Link>
-              ))}
+                  </Link>
+                )
+              )}
             </div>
           </div>
         </div>

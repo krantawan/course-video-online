@@ -13,7 +13,12 @@ export async function GET(
         //courseId: videoId,
       },
       include: {
-        course: true,
+        course: {
+          select: {
+            Instructor: true,
+            courseSessions: true,
+          },
+        },
       },
     });
 
@@ -23,7 +28,7 @@ export async function GET(
         message: "Course not found.",
       };
     }
-
+    //console.log(course);
     return Response.json(course);
   } catch (error) {
     console.log(error);

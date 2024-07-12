@@ -20,6 +20,7 @@ model User {
   accounts    Account[]
   sessions    Session[]
   reviews     Review[]
+  Course      Course[]
 }
 
 model Account {
@@ -63,11 +64,14 @@ model Course {
   title          String
   description    String
   image          String
+  preview        String?
   createdAt      DateTime           @default(now())
   updatedAt      DateTime           @updatedAt
   courseSessions CourseSession[]
   enrollments    CourseEnrollment[]
   reviews        Review[]
+  InstructorId   Int?
+  Instructor     User?              @relation(fields: [InstructorId], references: [id])
 }
 
 model CourseSession {
