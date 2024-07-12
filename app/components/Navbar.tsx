@@ -1,6 +1,13 @@
+"use client";
+
 import Link from "next/link";
+import { useSession, signOut } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export default function Navbar() {
+  const { data: session, status } = useSession();
+
   return (
     <>
       <header className="bg-primary text-primary-foreground py-4 px-6">
@@ -23,7 +30,23 @@ export default function Navbar() {
               Privacy
             </Link>
           </nav>
-          <div>Login Register</div>
+
+          {status === "authenticated" && session.user ? (
+            <div>
+              {session.user.name} |{" "}
+              <Link
+                href="/"
+                onClick={() => signOut()}
+                className="hover:underline"
+              >
+                Sign Out
+              </Link>
+            </div>
+          ) : (
+            <Link href="/login" className="hover:underline" prefetch={false}>
+              Sign In
+            </Link>
+          )}
         </div>
       </header>
     </>

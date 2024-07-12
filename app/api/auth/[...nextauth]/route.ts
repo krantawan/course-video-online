@@ -1,10 +1,9 @@
 import { PrismaClient, User } from "@prisma/client";
-import { PrismaAdapter } from "@auth/prisma-adapter";
+import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import bcrypt, { compare } from "bcrypt";
 
 import NextAuth, { type NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import GoogleProvider from "next-auth/providers/google";
 
 const prisma = new PrismaClient();
 
@@ -12,6 +11,10 @@ export const authOption: NextAuthOptions = {
   session: {
     strategy: "jwt",
   },
+
+  secret: process.env.NEXT_AUTH_SECRET,
+  adapter: PrismaAdapter(prisma),
+
   providers: [
     CredentialsProvider({
       name: "Credentials",
@@ -32,6 +35,7 @@ export const authOption: NextAuthOptions = {
 
         if (
           user &&
+          user.password && // ตรวจสอบว่า user.password ไม่เป็น null
           (await bcrypt.compare(credentials.password, user.password))
         ) {
           return {
@@ -45,11 +49,6 @@ export const authOption: NextAuthOptions = {
         }
       },
     }),
-
-    GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID as string,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
-    }),
   ],
 
   callbacks: {
@@ -58,6 +57,7 @@ export const authOption: NextAuthOptions = {
       if (user) {
         const u = user as unknown as any;
         return {
+          ...token,
           id: user.id,
           role: u.role,
         };
