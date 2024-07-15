@@ -2,11 +2,28 @@
 
 import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useState } from "react";
+import Avatar from "../../public/avatar_default.png";
+import { usePathname } from "next/navigation";
 
 export default function Navbar() {
   const { data: session, status } = useSession();
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const pathname = usePathname();
+
+  const toggleDropdown = () => {
+    setIsDropdownOpen(!isDropdownOpen);
+  };
+
+  const userImage = session?.user?.image || Avatar.src;
+
+  const isActive = (path: string) => {
+    if (path === "/") {
+      return pathname === path;
+    } else {
+      return pathname.startsWith(path);
+    }
+  };
 
   return (
     <>
@@ -17,30 +34,70 @@ export default function Navbar() {
             <span className="text-xl font-bold">Video Courses</span>
           </Link>
           <nav className="hidden md:flex items-center gap-6">
-            <Link href="#" className="hover:underline" prefetch={false}>
+            <Link
+              href="/"
+              className={`nav-link ${isActive("/") ? "active" : ""}`}
+              prefetch={false}
+            >
               Courses
             </Link>
-            <Link href="#" className="hover:underline" prefetch={false}>
+            <Link
+              href="/about"
+              className={`nav-link ${isActive("/about") ? "active" : ""}`}
+              prefetch={false}
+            >
               About
             </Link>
-            <Link href="#" className="hover:underline" prefetch={false}>
+            <Link
+              href="/contact"
+              className={`nav-link ${isActive("/contact") ? "active" : ""}`}
+              prefetch={false}
+            >
               Contact
             </Link>
-            <Link href="#" className="hover:underline" prefetch={false}>
+            <Link
+              href="/privacy"
+              className={`nav-link ${isActive("/privacy") ? "active" : ""}`}
+              prefetch={false}
+            >
               Privacy
             </Link>
           </nav>
 
           {status === "authenticated" && session.user ? (
-            <div>
-              {session.user.name} |{" "}
-              <Link
-                href="/"
-                onClick={() => signOut()}
-                className="hover:underline"
-              >
-                Sign Out
-              </Link>
+            <div className="relative">
+              <button onClick={toggleDropdown}>
+                <img
+                  src={userImage as string}
+                  alt={session.user.name || "User"}
+                  className="w-10 h-10 p-1 rounded-full ring-2 ring-gray-300 "
+                />
+              </button>
+              {isDropdownOpen && (
+                <div className="absolute right-0 mt-2 w-48 bg-white border rounded shadow-md">
+                  <Link
+                    href="/profile"
+                    className="block px-4 py-2 text-gray-800 hover:bg-gray-100"
+                  >
+                    Profile
+                  </Link>
+                  <Link
+                    href="/mycourses"
+                    className="block px-4 py-2 text-gray-800 hover:bg-gray-100"
+                  >
+                    My Courses
+                  </Link>
+                  <button
+                    onClick={() => {
+                      signOut();
+                      setIsDropdownOpen(false);
+                    }}
+                    className="block w-full text-left px-4 py-2 text-gray-800 hover:bg-gray-100"
+                  >
+                    Sign Out
+                  </button>
+                </div>
+              )}
             </div>
           ) : (
             <Link href="/login" className="hover:underline" prefetch={false}>

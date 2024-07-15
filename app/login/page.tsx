@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSession, signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { FormEvent } from "react";
@@ -10,11 +10,18 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const router = useRouter();
 
-  if (session) {
-    router.push("/");
+  useEffect(() => {
+    if (status === "authenticated") {
+      router.push("/");
+    }
+  }, [status, router]);
+
+  if (status === "loading" || status === "authenticated") {
+    // Show a loading indicator or nothing at all while checking the session
+    return null;
   }
 
   const handleSubmit = async (e: FormEvent) => {
@@ -88,6 +95,15 @@ export default function Login() {
             </div>
           </form>
         </div>
+        <div className="mt-6">
+          <button
+            onClick={() => signIn("google")}
+            className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+          >
+            Sign in with Google
+          </button>
+        </div>
+
         <div className="text-center text-sm text-gray-600">
           Don&apos;t have an account?{" "}
           <Link

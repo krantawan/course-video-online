@@ -8,19 +8,20 @@ datasource db {
 }
 
 model User {
-  id          Int                @id @default(autoincrement())
-  name        String?
-  email       String             @unique
-  password    String?
-  image       String?
-  role        String             @default("member")
-  createdAt   DateTime           @default(now())
-  updatedAt   DateTime           @default(now()) @updatedAt
-  enrollments CourseEnrollment[]
-  accounts    Account[]
-  sessions    Session[]
-  reviews     Review[]
-  Course      Course[]
+  id            Int                @id @default(autoincrement())
+  name          String?
+  email         String             @unique
+  password      String?
+  image         String?
+  role          String             @default("member")
+  emailVerified DateTime?
+  createdAt     DateTime           @default(now())
+  updatedAt     DateTime           @default(now()) @updatedAt
+  enrollments   CourseEnrollment[]
+  accounts      Account[]
+  sessions      Session[]
+  reviews       Review[]
+  Course        Course[]
 }
 
 model Account {

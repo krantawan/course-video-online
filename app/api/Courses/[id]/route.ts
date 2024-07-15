@@ -1,11 +1,25 @@
 import { PrismaClient } from "@prisma/client";
+import { NextRequest, NextResponse } from "next/server";
+
 const prisma = new PrismaClient();
 
 export async function GET(
-  request: Request,
+  request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
+    const token = request.headers.get("authorization");
+
+    //console.log("API_SECRET_KEY:", process.env.API_SECRET_KEY); // ตรวจสอบว่าโหลดค่า API_SECRET_KEY ถูกต้อง
+    //console.log("Authorization header:", token); // ตรวจสอบค่า header ที่ส่งมา
+
+    if (!token || token !== `Bearer ${process.env.API_SECRET_KEY}`) {
+      console.log("Token mismatch or not provided");
+      return new NextResponse(JSON.stringify({ message: "Forbidden" }), {
+        status: 403,
+      });
+    }
+
     const courseId = Number(params.id);
     const course = await prisma.course.findUnique({
       where: {
@@ -13,26 +27,39 @@ export async function GET(
       },
       include: {
         courseSessions: true,
-        Instructor: true,
-        reviews: {
-          include: {
-            User: true,
+        Instructor: {
+          select: {
+            name: true,
+            image: true,
           },
         },
+        reviews: {
+          include: {
+            User: {
+              select: {
+                name: true,
+                image: true,
+              },
+            },
+          },
+        },
+        enrollments: true,
       },
     });
 
     if (!course) {
-      throw {
-        status: 404,
-        message: "Course not found.",
-      };
+      return new NextResponse(
+        JSON.stringify({ message: "Course not found." }),
+        { status: 404 }
+      );
     }
 
-    //console.log(course);
-
-    return Response.json(course);
+    return new NextResponse(JSON.stringify(course), { status: 200 });
   } catch (error) {
-    console.log(error);
+    console.error("Error fetching course:", error);
+    return new NextResponse(
+      JSON.stringify({ message: "Internal Server Error" }),
+      { status: 500 }
+    );
   }
 }

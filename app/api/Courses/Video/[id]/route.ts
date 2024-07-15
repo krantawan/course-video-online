@@ -1,4 +1,6 @@
 import { PrismaClient } from "@prisma/client";
+import { NextRequest, NextResponse } from "next/server";
+
 const prisma = new PrismaClient();
 
 export async function GET(
@@ -6,6 +8,15 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
+    const token = request.headers.get("authorization");
+
+    if (!token || token !== `Bearer ${process.env.API_SECRET_KEY}`) {
+      console.log("Token mismatch or not provided");
+      return new NextResponse(JSON.stringify({ message: "Forbidden" }), {
+        status: 403,
+      });
+    }
+
     const videoId = Number(params.id);
     const course = await prisma.courseSession.findUnique({
       where: {
@@ -15,8 +26,18 @@ export async function GET(
       include: {
         course: {
           select: {
-            Instructor: true,
+            Instructor: {
+              select: {
+                name: true,
+                image: true,
+              },
+            },
             courseSessions: true,
+            enrollments: {
+              select: {
+                userId: true,
+              },
+            },
           },
         },
       },

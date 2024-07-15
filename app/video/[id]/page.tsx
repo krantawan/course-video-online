@@ -4,26 +4,61 @@ import axios from "axios";
 import Image from "next/image";
 import Avatar from "/public/avatar_default.png";
 import { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 export default function VideoCourse({ params }: { params: { id: string } }) {
   const { id } = params;
-  const [video, setVideo] = useState<any>("");
+  const [video, setVideo] = useState<any>(null);
+  const { data: session, status } = useSession();
+  const router = useRouter();
 
-  const fetchVideoById = async (id: string) => {
+  const fetchVideoById = async (id: string, userId: string) => {
     try {
-      const response = await axios.get(`/api/Courses/Video/${id}`);
+      const response = await axios.get(`/api/Courses/Video/${id}`, {
+        headers: {
+          Authorization: `Bearer ${process.env.API_SECRET_KEY}`,
+        },
+      });
+
       setVideo(response.data);
-      //console.log(response.data);
+      console.log("Video response:", response.data);
+
+      // Check if the user is enrolled in the course
+      if (response.data.course?.enrollments) {
+        const isUserEnrolled = response.data.course.enrollments.some(
+          (enrollment: { userId: number }) =>
+            enrollment.userId === Number(userId)
+        );
+
+        console.log("Session user ID:", userId);
+        console.log("isUserEnrolled:", isUserEnrolled);
+
+        if (!isUserEnrolled) {
+          router.push("/access-denied"); // Redirect to access denied page
+          return;
+        }
+      } else {
+        console.log("User not enrolled");
+        router.push("/access-denied"); // Redirect to access denied page
+      }
     } catch (error) {
       console.log(error);
+      router.push("/error"); // Redirect to an error page
     }
   };
 
   useEffect(() => {
-    if (id) {
-      fetchVideoById(id);
+    if (status === "authenticated" && session?.user?.id && id) {
+      fetchVideoById(id, session.user.id);
+    } else if (status === "unauthenticated") {
+      router.push("/access-denied");
     }
-  }, [id]);
+  }, [id, status, session?.user?.id]);
+
+  if (status === "loading" || !video) {
+    return null;
+  }
 
   return (
     <div>
@@ -48,7 +83,13 @@ export default function VideoCourse({ params }: { params: { id: string } }) {
             <div className="flex items-center gap-2 text-gray-500">
               <div className="w-8 h-8 rounded-full overflow-hidden bg-gray-300">
                 {video.course?.Instructor?.image ? (
-                  video.course?.Instructor?.image
+                  <Image
+                    src={video.course.Instructor.image}
+                    alt="Instructor Avatar"
+                    className="w-full h-full object-cover"
+                    width={32}
+                    height={32}
+                  />
                 ) : (
                   <Image
                     src={Avatar}
@@ -83,7 +124,7 @@ export default function VideoCourse({ params }: { params: { id: string } }) {
                     />
                     <div>
                       <div className="font-medium line-clamp-2">
-                        {chapter.title} {chapter.id}
+                        {chapter.title}
                       </div>
                       <div className="text-sm text-gray-500">{} • 45 min</div>
                     </div>

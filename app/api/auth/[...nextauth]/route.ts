@@ -1,17 +1,24 @@
-import { PrismaClient, User } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
-import bcrypt, { compare } from "bcrypt";
+import bcrypt from "bcrypt";
 
-import NextAuth, { type NextAuthOptions } from "next-auth";
+import NextAuth, { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
+import GoogleProvider from "next-auth/providers/google";
 
 const prisma = new PrismaClient();
 
-export const authOption: NextAuthOptions = {
+const clientId = process.env.GOOGLE_CLIENT_ID || "";
+const clientSecret = process.env.GOOGLE_CLIENT_SECRET || "";
+
+if (!clientId || !clientSecret) {
+  throw new Error("Missing Google OAuth environment variables");
+}
+
+export const authOptions: NextAuthOptions = {
   session: {
     strategy: "jwt",
   },
-
   secret: process.env.NEXT_AUTH_SECRET,
   adapter: PrismaAdapter(prisma),
 
@@ -22,7 +29,7 @@ export const authOption: NextAuthOptions = {
         email: { label: "Email", type: "email", placeholder: "Email" },
         password: { label: "Password", type: "password" },
       },
-      async authorize(credentials, req) {
+      async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
           return null;
         }
@@ -35,45 +42,42 @@ export const authOption: NextAuthOptions = {
 
         if (
           user &&
-          user.password && // ตรวจสอบว่า user.password ไม่เป็น null
+          user.password &&
           (await bcrypt.compare(credentials.password, user.password))
         ) {
           return {
             id: user.id + "",
             name: user.name,
             email: user.email,
-            role: user.role, // เพิ่ม role // แล้วส่งต่อไปที่ jwt
+            role: user.role,
           };
         } else {
           throw new Error("Invalid email or password");
         }
       },
     }),
+
+    GoogleProvider({
+      clientId,
+      clientSecret,
+    }),
   ],
 
   callbacks: {
     jwt: async ({ token, user }) => {
-      // jwt user ที่ส่งต่อมา สามารถนำมาใส่ token ได้
       if (user) {
-        const u = user as unknown as any;
-        return {
-          ...token,
-          id: user.id,
-          role: u.role,
-        };
+        token.id = user.id;
+        token.role = user.role;
       }
       return token;
     },
 
     session: async ({ session, token }) => {
-      return {
-        ...session,
-        user: {
-          ...session.user,
-          id: token.id,
-          role: token.role,
-        },
-      };
+      if (token) {
+        session.user.id = token.id;
+        session.user.role = token.role;
+      }
+      return session;
     },
   },
 
@@ -82,5 +86,5 @@ export const authOption: NextAuthOptions = {
   },
 };
 
-const handler = NextAuth(authOption);
+const handler = NextAuth(authOptions);
 export { handler as GET, handler as POST };

@@ -27,7 +27,7 @@ export default function CourseList() {
       <h2 className="text-2xl font-bold mb-4">Course Videos</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
         {courseList.map((course, index) => (
-          <Link href={`/video/${course.id}`} key={index}>
+          <Link href={`/course/${course.id}`} key={index}>
             <div className="border border-gray-200 rounded overflow-hidden hover:shadow-lg hover:-translate-y-2 transition duration-300 h-full flex flex-col">
               <img
                 src={course.image}

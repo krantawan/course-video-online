@@ -4,16 +4,58 @@ import axios from "axios";
 import Link from "next/link";
 import Image from "next/image";
 import Avatar from "/public/avatar_default.png";
+import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 export default function Courses({ params }: { params: { id: string } }) {
   const { id } = params;
-  const [course, setCourse] = useState<any>();
+  const [course, setCourse] = useState<any>(null);
+  const [isEnrolled, setIsEnrolled] = useState(false);
+  const { data: session } = useSession();
+  const router = useRouter();
 
   const fetchCourseById = async (id: string) => {
     try {
-      const response = await axios.get(`/api/Courses/${id}`);
+      const response = await axios.get(`/api/Courses/${id}`, {
+        headers: {
+          Authorization: `Bearer ${process.env.API_SECRET_KEY}`,
+        },
+      });
+
       setCourse(response.data);
-      //console.log(response.data);
+
+      // Check if the user is enrolled in the course
+      if (session && response.data.enrollments) {
+        //console.log("Session user ID:", session.user); // Debugging
+        const isUserEnrolled = response.data.enrollments.some(
+          (enrollment: { userId: number }) =>
+            enrollment.userId === Number(session.user.id)
+        );
+        setIsEnrolled(isUserEnrolled);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleEnroll = async () => {
+    if (!session) {
+      alert("You need to be logged in to enroll");
+      return;
+    }
+
+    try {
+      await axios.post(
+        `/api/Courses/Enroll/${id}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${process.env.API_SECRET_KEY}`,
+          },
+        }
+      );
+      setIsEnrolled(true); // Update the state to reflect enrollment
+      router.push(`/course/${id}`);
     } catch (error) {
       console.log(error);
     }
@@ -23,11 +65,12 @@ export default function Courses({ params }: { params: { id: string } }) {
     if (id) {
       fetchCourseById(id);
     }
-  }, [id]);
+  }, [id, session, session?.user?.id]);
 
   if (!course) {
-    return <div>Loading...</div>;
+    return <div>Loading...</div>; // Show loading message if the course is not yet loaded
   }
+
   return (
     <div className="flex flex-col min-h-screen">
       <section className="w-full py-12 md:py-24 lg:py-32 bg-black bg-opacity-95">
@@ -42,6 +85,16 @@ export default function Courses({ params }: { params: { id: string } }) {
             <p className="max-w-lg text-gray-300 md:text-xl lg:text-base xl:text-xl text-justify">
               {course.description}
             </p>
+            <div>
+              {!isEnrolled && session && (
+                <button
+                  onClick={handleEnroll}
+                  className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                >
+                  Enroll
+                </button>
+              )}
+            </div>
           </div>
           <div className="relative aspect-video rounded-lg overflow-hidden">
             <div className="w-full h-full object-cover">
@@ -67,35 +120,41 @@ export default function Courses({ params }: { params: { id: string } }) {
             <div>
               <h2 className="text-2xl font-bold">Course Curriculum</h2>
               <div className="mt-6 grid gap-4">
-                {course.courseSessions.map(
-                  (
-                    sessionCourse: {
-                      id: number;
-                      title: string;
-                      description: string;
-                      duration: string;
-                    },
-                    index: number
-                  ) => (
-                    <Link
-                      href={`/video/${sessionCourse.id}`}
-                      key={index + "_" + sessionCourse.title}
-                    >
-                      <div className="grid grid-cols-[1fr_auto] items-center gap-4 rounded-lg bg-gray-100 p-4">
-                        <div>
-                          <h3 className="text-lg font-semibold">
-                            {index + 1} - {sessionCourse.title}
-                          </h3>
-                          <p className="text-gray-600 text-justify">
-                            {sessionCourse.description}
-                          </p>
+                {isEnrolled ? (
+                  course.courseSessions.map(
+                    (
+                      sessionCourse: {
+                        id: number;
+                        title: string;
+                        description: string;
+                        duration: string;
+                      },
+                      index: number
+                    ) => (
+                      <Link
+                        href={`/video/${sessionCourse.id}`}
+                        key={index + "_" + sessionCourse.title}
+                      >
+                        <div className="grid grid-cols-[1fr_auto] items-center gap-4 rounded-lg bg-gray-100 p-4">
+                          <div>
+                            <h3 className="text-lg font-semibold">
+                              {index + 1} - {sessionCourse.title}
+                            </h3>
+                            <p className="text-gray-600 text-justify">
+                              {sessionCourse.description}
+                            </p>
+                          </div>
+                          <div className="text-gray-600">
+                            {sessionCourse.duration}
+                          </div>
                         </div>
-                        <div className="text-gray-600">
-                          {sessionCourse.duration}
-                        </div>
-                      </div>
-                    </Link>
+                      </Link>
+                    )
                   )
+                ) : (
+                  <div className="text-red-500">
+                    You must enroll to access the course sessions.
+                  </div>
                 )}
               </div>
             </div>
@@ -104,7 +163,12 @@ export default function Courses({ params }: { params: { id: string } }) {
               <div className="mt-6 grid grid-cols-[auto_1fr] items-start gap-6">
                 <div>
                   {course.Instructor.image ? (
-                    course.Instructor.image
+                    <Image
+                      src={course.Instructor.image}
+                      alt="Instructor image"
+                      width={100}
+                      height={100}
+                    />
                   ) : (
                     <Image src={Avatar} alt="avatar" width={100} height={100} />
                   )}
@@ -137,8 +201,13 @@ export default function Courses({ params }: { params: { id: string } }) {
                       className="grid grid-cols-[auto_1fr] items-start gap-4 rounded-lg bg-gray-200 p-4"
                     >
                       <div>
-                        {review.image ? (
-                          review.image
+                        {review.User.image ? (
+                          <Image
+                            src={review.User.image}
+                            alt="User image"
+                            width={40}
+                            height={40}
+                          />
                         ) : (
                           <div className="relative w-10 h-10 overflow-hidden bg-gray-100 rounded-full dark:bg-gray-600">
                             <Image src={Avatar} alt="avatar" />
