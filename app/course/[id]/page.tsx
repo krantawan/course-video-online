@@ -270,7 +270,7 @@ export default function Courses({ params }: { params: { id: string } }) {
                 </div>
               ) : null}
 
-              <div className="mt-6 grid gap-6">
+              <div className="mt-6 grid gap-6 grid-cols-2">
                 {course.reviews.map(
                   (
                     review: {

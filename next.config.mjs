@@ -4,7 +4,7 @@ const nextConfig = {
     API_SECRET_KEY: process.env.API_SECRET_KEY,
   },
   images: {
-    domains: ["lh3.googleusercontent.com"],
+    remotePatterns: ["lh3.googleusercontent.com"],
   },
 };
 

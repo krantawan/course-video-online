@@ -10,9 +10,6 @@ export async function GET(
   try {
     const token = request.headers.get("authorization");
 
-    //console.log("API_SECRET_KEY:", process.env.API_SECRET_KEY); // ตรวจสอบว่าโหลดค่า API_SECRET_KEY ถูกต้อง
-    //console.log("Authorization header:", token); // ตรวจสอบค่า header ที่ส่งมา
-
     if (!token || token !== `Bearer ${process.env.API_SECRET_KEY}`) {
       console.log("Token mismatch or not provided");
       return new NextResponse(JSON.stringify({ message: "Forbidden" }), {
@@ -22,9 +19,7 @@ export async function GET(
 
     const courseId = Number(params.id);
     const course = await prisma.course.findUnique({
-      where: {
-        id: courseId,
-      },
+      where: { id: courseId },
       include: {
         courseSessions: true,
         Instructor: {
@@ -34,9 +29,7 @@ export async function GET(
           },
         },
         reviews: {
-          orderBy: {
-            rating: "desc",
-          },
+          orderBy: { rating: "desc" },
           include: {
             User: {
               select: {
