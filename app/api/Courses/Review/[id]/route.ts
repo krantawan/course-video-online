@@ -10,6 +10,15 @@ export async function POST(
   { params }: { params: { id: string } }
 ) {
   try {
+    const token = request.headers.get("authorization");
+
+    if (!token || token !== `Bearer ${process.env.API_SECRET_KEY}`) {
+      console.log("Token mismatch or not provided");
+      return new NextResponse(JSON.stringify({ message: "Forbidden" }), {
+        status: 403,
+      });
+    }
+
     const session = await getServerSession({
       req: request,
       ...authOptions,
@@ -21,15 +30,18 @@ export async function POST(
 
     const courseId = Number(params.id);
     const userId = Number(session.user.id);
+    const { review, rating } = await request.json();
 
-    const courseEnroll = await prisma.courseEnrollment.create({
+    const courseReview = await prisma.review.create({
       data: {
-        userId: userId,
+        rating: rating,
+        comment: review,
         courseId: courseId,
+        userId: userId,
       },
     });
 
-    return new NextResponse(JSON.stringify(courseEnroll), { status: 201 });
+    return new NextResponse(JSON.stringify(courseReview), { status: 201 });
   } catch (error) {
     console.error(error);
     return new NextResponse("Internal Server Error", { status: 500 });

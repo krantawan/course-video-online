@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import "./globals.css";
+import "@smastrom/react-rating/style.css";
 
 import SessionProvider from "./SessionProvider";
 import { getServerSession } from "next-auth";

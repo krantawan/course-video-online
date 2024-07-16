@@ -10,7 +10,7 @@ export default function AccessDenied() {
       </p>
       <Link
         href="/"
-        className="bg-blue-500 text-white font-semibold py-2 px-4 rounded"
+        className="bg-black text-white font-semibold py-2 px-4 rounded"
       >
         Go Back to Home
       </Link>

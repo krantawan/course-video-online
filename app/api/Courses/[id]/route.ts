@@ -34,6 +34,9 @@ export async function GET(
           },
         },
         reviews: {
+          orderBy: {
+            rating: "desc",
+          },
           include: {
             User: {
               select: {

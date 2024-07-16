@@ -6,10 +6,14 @@ import Image from "next/image";
 import Avatar from "/public/avatar_default.png";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
+import { Rating } from "@smastrom/react-rating";
+import "@smastrom/react-rating/style.css";
 
 export default function Courses({ params }: { params: { id: string } }) {
   const { id } = params;
   const [course, setCourse] = useState<any>(null);
+  const [review, setReview] = useState("");
+  const [rating, setRating] = useState(0);
   const [isEnrolled, setIsEnrolled] = useState(false);
   const { data: session } = useSession();
   const router = useRouter();
@@ -24,9 +28,7 @@ export default function Courses({ params }: { params: { id: string } }) {
 
       setCourse(response.data);
 
-      // Check if the user is enrolled in the course
       if (session && response.data.enrollments) {
-        //console.log("Session user ID:", session.user); // Debugging
         const isUserEnrolled = response.data.enrollments.some(
           (enrollment: { userId: number }) =>
             enrollment.userId === Number(session.user.id)
@@ -54,8 +56,43 @@ export default function Courses({ params }: { params: { id: string } }) {
           },
         }
       );
-      setIsEnrolled(true); // Update the state to reflect enrollment
+      setIsEnrolled(true);
       router.push(`/course/${id}`);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleReview = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!session) {
+      alert("You need to be logged in to review");
+      return;
+    }
+
+    if (rating === 0) {
+      alert("Please provide a rating");
+      return;
+    }
+
+    try {
+      await axios.post(
+        `/api/Courses/Review/${id}`,
+        {
+          rating,
+          review,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${process.env.API_SECRET_KEY}`,
+          },
+        }
+      );
+
+      // Clear the review input
+      setReview("");
+      setRating(0);
+      fetchCourseById(id);
     } catch (error) {
       console.log(error);
     }
@@ -68,7 +105,7 @@ export default function Courses({ params }: { params: { id: string } }) {
   }, [id, session, session?.user?.id]);
 
   if (!course) {
-    return <div>Loading...</div>; // Show loading message if the course is not yet loaded
+    return <div>Loading...</div>;
   }
 
   return (
@@ -152,8 +189,27 @@ export default function Courses({ params }: { params: { id: string } }) {
                     )
                   )
                 ) : (
-                  <div className="text-red-500">
-                    You must enroll to access the course sessions.
+                  <div
+                    className="bg-red-100 border-t-4 border-red-500 rounded-b text-red-900 px-4 py-3 "
+                    role="alert"
+                  >
+                    <div className="flex">
+                      <div className="py-1">
+                        <svg
+                          className="fill-current h-6 w-6 text-red-500 mr-4"
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 20 20"
+                        >
+                          <path d="M2.93 17.07A10 10 0 1 1 17.07 2.93 10 10 0 0 1 2.93 17.07zm12.73-1.41A8 8 0 1 0 4.34 4.34a8 8 0 0 0 11.32 11.32zM9 11V9h2v6H9v-4zm0-6h2v2H9V5z" />
+                        </svg>
+                      </div>
+                      <div>
+                        <p className="font-bold">Alert</p>
+                        <p className="text-sm">
+                          You must enroll to access the course sessions.
+                        </p>
+                      </div>
+                    </div>
                   </div>
                 )}
               </div>
@@ -184,7 +240,36 @@ export default function Courses({ params }: { params: { id: string } }) {
               </div>
             </div>
             <div>
-              <h2 className="text-2xl font-bold">Reviews</h2>
+              <h2 className="text-2xl font-bold mb-2">Reviews</h2>
+              {isEnrolled ? (
+                <div>
+                  <form onSubmit={handleReview}>
+                    <textarea
+                      className="w-full h-24 p-2 border border-gray-300 rounded"
+                      placeholder="Add a review"
+                      onChange={(e) => setReview(e.target.value)}
+                      value={review}
+                      required
+                    />
+                    <div className="my-2">
+                      <Rating
+                        style={{ maxWidth: 100 }}
+                        value={rating}
+                        onChange={(value: number) => setRating(value)}
+                        isRequired
+                      />
+                    </div>
+
+                    <button
+                      type="submit"
+                      className="w-full bg-black hover:opacity-90 text-white py-2 px-4 rounded"
+                    >
+                      Submit
+                    </button>
+                  </form>
+                </div>
+              ) : null}
+
               <div className="mt-6 grid gap-6">
                 {course.reviews.map(
                   (
@@ -201,8 +286,9 @@ export default function Courses({ params }: { params: { id: string } }) {
                       className="grid grid-cols-[auto_1fr] items-start gap-4 rounded-lg bg-gray-200 p-4"
                     >
                       <div>
-                        {review.User.image ? (
+                        {review.User && review.User.image ? (
                           <Image
+                            className="relative w-10 h-10 overflow-hidden bg-gray-100 rounded-full dark:bg-gray-600"
                             src={review.User.image}
                             alt="User image"
                             width={40}
@@ -216,14 +302,18 @@ export default function Courses({ params }: { params: { id: string } }) {
                       </div>
                       <div>
                         <div className="flex items-center gap-2">
-                          <div className="flex items-center gap-0.5"></div>
+                          <Rating
+                            style={{ maxWidth: 100 }}
+                            value={review.rating}
+                            readOnly
+                          />
                           <div className="text-sm text-gray-600">
                             {review.rating} out of 5
                           </div>
                         </div>
                         <p className="mt-2">{review.comment}</p>
                         <div className="mt-2 text-sm text-gray-600">
-                          - {review.User.name}
+                          - {review.User && review.User.name}
                         </div>
                       </div>
                     </div>
