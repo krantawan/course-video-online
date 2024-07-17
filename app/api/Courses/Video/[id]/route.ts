@@ -17,11 +17,10 @@ export async function GET(
       });
     }
 
-    const videoId = Number(params.id);
-    const course = await prisma.courseSession.findUnique({
+    const videoId = params.id;
+    const course = await prisma.courseSession.findFirst({
       where: {
-        id: videoId,
-        //courseId: videoId,
+        videoUrl: videoId,
       },
       include: {
         course: {

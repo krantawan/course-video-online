@@ -22,7 +22,7 @@ export default function VideoCourse({ params }: { params: { id: string } }) {
       });
 
       setVideo(response.data);
-      console.log("Video response:", response.data);
+      //console.log("Video response:", response.data);
 
       // Check if the user is enrolled in the course
       if (response.data.course?.enrollments) {
@@ -31,8 +31,8 @@ export default function VideoCourse({ params }: { params: { id: string } }) {
             enrollment.userId === Number(userId)
         );
 
-        console.log("Session user ID:", userId);
-        console.log("isUserEnrolled:", isUserEnrolled);
+        //console.log("Session user ID:", userId);
+        //console.log("isUserEnrolled:", isUserEnrolled);
 
         if (!isUserEnrolled) {
           router.push("/access-denied"); // Redirect to access denied page
@@ -108,9 +108,11 @@ export default function VideoCourse({ params }: { params: { id: string } }) {
               {video?.course?.courseSessions?.map(
                 (chapter: any, index: number) => (
                   <Link
-                    href={`/video/${chapter.id}`}
+                    href={`/video/${chapter.videoUrl}`}
                     className={`flex items-center gap-3 hover:bg-gray-200 rounded-md p-2 ${
-                      String(chapter.id) === String(id) ? "bg-gray-200" : ""
+                      String(chapter.videoUrl) === String(video.videoUrl)
+                        ? "bg-gray-200"
+                        : ""
                     }`}
                     prefetch={false}
                     key={index}

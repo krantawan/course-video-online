@@ -4,7 +4,14 @@ const nextConfig = {
     API_SECRET_KEY: process.env.API_SECRET_KEY,
   },
   images: {
-    remotePatterns: ["lh3.googleusercontent.com"],
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "lh3.googleusercontent.com",
+        port: "",
+        pathname: "/**",
+      },
+    ],
   },
 };
 

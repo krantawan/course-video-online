@@ -78,7 +78,7 @@ model Course {
 model CourseSession {
   id          Int     @id @default(autoincrement())
   title       String
-  videoUrl    String
+  videoUrl    String  @unique
   description String?
   duration    String?
   courseId    Int

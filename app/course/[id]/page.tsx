@@ -163,13 +163,14 @@ export default function Courses({ params }: { params: { id: string } }) {
                       sessionCourse: {
                         id: number;
                         title: string;
+                        videoUrl: string;
                         description: string;
                         duration: string;
                       },
                       index: number
                     ) => (
                       <Link
-                        href={`/video/${sessionCourse.id}`}
+                        href={`/video/${sessionCourse.videoUrl}`}
                         key={index + "_" + sessionCourse.title}
                       >
                         <div className="grid grid-cols-[1fr_auto] items-center gap-4 rounded-lg bg-gray-100 p-4">
