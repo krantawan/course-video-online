@@ -2,6 +2,7 @@
 const nextConfig = {
   env: {
     API_SECRET_KEY: process.env.API_SECRET_KEY,
+    NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
   },
   images: {
     remotePatterns: [
@@ -13,6 +14,7 @@ const nextConfig = {
       },
     ],
   },
+  reactStrictMode: true,
 };
 
 export default nextConfig;

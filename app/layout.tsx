@@ -23,11 +23,9 @@ export default async function RootLayout({
   const session = await getServerSession();
   return (
     <html lang="en">
-      <body className={`${inter.className} flex flex-col min-h-screen`}>
+      <body className={`${inter.className}`}>
         <SessionProvider session={session}>
-          <Navbar />
           <main className="flex-grow">{children}</main>
-          <Footer />
         </SessionProvider>
       </body>
     </html>
