@@ -1,30 +1,61 @@
 import { PrismaClient } from "@prisma/client";
+import { NextRequest, NextResponse } from "next/server";
+
 const prisma = new PrismaClient();
 
 export async function GET(
-  request: Request,
+  request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
+    const token = request.headers.get("authorization");
+
+    if (!token || token !== `Bearer ${process.env.API_SECRET_KEY}`) {
+      console.log("Token mismatch or not provided");
+      return new NextResponse(JSON.stringify({ message: "Forbidden" }), {
+        status: 403,
+      });
+    }
+
     const courseId = Number(params.id);
     const course = await prisma.course.findUnique({
-      where: {
-        id: courseId,
-      },
+      where: { id: courseId },
       include: {
         courseSessions: true,
+        Instructor: {
+          select: {
+            name: true,
+            image: true,
+          },
+        },
+        reviews: {
+          orderBy: { rating: "desc" },
+          include: {
+            User: {
+              select: {
+                name: true,
+                image: true,
+              },
+            },
+          },
+        },
+        enrollments: true,
       },
     });
 
     if (!course) {
-      throw {
-        status: 404,
-        message: "Course not found.",
-      };
+      return new NextResponse(
+        JSON.stringify({ message: "Course not found." }),
+        { status: 404 }
+      );
     }
 
-    return Response.json(course);
+    return new NextResponse(JSON.stringify(course), { status: 200 });
   } catch (error) {
-    console.log(error);
+    console.error("Error fetching course:", error);
+    return new NextResponse(
+      JSON.stringify({ message: "Internal Server Error" }),
+      { status: 500 }
+    );
   }
 }

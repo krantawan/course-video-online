@@ -1,100 +1,130 @@
+"use client";
+
 import Link from "next/link";
+import { useSession, signOut } from "next-auth/react";
+import { useState } from "react";
+import Avatar from "../../public/avatar_default.png";
+import { usePathname } from "next/navigation";
 
 export default function Navbar() {
+  const { data: session, status } = useSession();
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const pathname = usePathname();
+
+  const toggleDropdown = () => {
+    setIsDropdownOpen(!isDropdownOpen);
+  };
+
+  const userImage = session?.user?.image || Avatar.src;
+
+  const isActive = (path: string) => {
+    if (path === "/") {
+      return pathname === path;
+    } else {
+      return pathname.startsWith(path);
+    }
+  };
+
   return (
     <>
-      <div className="mb-10">
-        <nav className="bg-white  fixed w-full z-20 top-0 start-0 border-b border-gray-200 ">
-          <div className="container flex flex-wrap items-center justify-between mx-auto p-4">
+      <header className="bg-primary text-primary-foreground py-4 px-6">
+        <div className="container mx-auto flex items-center justify-between">
+          <Link href="/" className="flex items-center gap-2" prefetch={false}>
+            <PlayIcon className="h-6 w-6" />
+            <span className="text-xl font-bold">Video Courses</span>
+          </Link>
+          <nav className="hidden md:flex items-center gap-6">
             <Link
-              href="https://flowbite.com/"
-              className="flex items-center space-x-3 rtl:space-x-reverse"
+              href="/"
+              className={`nav-link ${isActive("/") ? "active" : ""}`}
+              prefetch={false}
             >
-              <img
-                src="https://flowbite.com/docs/images/logo.svg"
-                className="h-8"
-                alt="Flowbite Logo"
-              />
-              <span className="self-center text-2xl font-semibold whitespace-nowrap ">
-                Course Video
-              </span>
+              Courses
             </Link>
-            <div className="flex md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse">
-              <button
-                type="button"
-                className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 text-center "
-              >
-                Get started
-              </button>
-              <button
-                data-collapse-toggle="navbar-sticky"
-                type="button"
-                className="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 
-                "
-                aria-controls="navbar-sticky"
-                aria-expanded="false"
-              >
-                <span className="sr-only">Open main menu</span>
-                <svg
-                  className="w-5 h-5"
-                  aria-hidden="true"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 17 14"
-                >
-                  <path
-                    stroke="currentColor"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M1 1h15M1 7h15M1 13h15"
-                  />
-                </svg>
-              </button>
-            </div>
-            <div
-              className="items-center justify-between hidden w-full md:flex md:w-auto md:order-1"
-              id="navbar-sticky"
+            <Link
+              href="/about"
+              className={`nav-link ${isActive("/about") ? "active" : ""}`}
+              prefetch={false}
             >
-              <ul className="flex flex-col p-4 md:p-0 mt-4 font-medium border border-gray-100 rounded-lg bg-gray-50 md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-white ">
-                <li>
+              About
+            </Link>
+            <Link
+              href="/contact"
+              className={`nav-link ${isActive("/contact") ? "active" : ""}`}
+              prefetch={false}
+            >
+              Contact
+            </Link>
+            <Link
+              href="/privacy"
+              className={`nav-link ${isActive("/privacy") ? "active" : ""}`}
+              prefetch={false}
+            >
+              Privacy
+            </Link>
+          </nav>
+
+          {status === "authenticated" && session.user ? (
+            <div className="relative">
+              <button onClick={toggleDropdown}>
+                <img
+                  src={userImage as string}
+                  alt={session.user.name || "User"}
+                  className="w-10 h-10 p-1 rounded-full ring-2 ring-gray-300 "
+                />
+              </button>
+              {isDropdownOpen && (
+                <div className="absolute right-0 mt-2 w-48 bg-white border rounded shadow-md">
                   <Link
-                    href="/"
-                    className="block py-2 px-3 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:p-0 "
-                    aria-current="page"
+                    href="/profile"
+                    className="block px-4 py-2 text-gray-800 hover:bg-gray-100"
                   >
-                    Home
+                    Profile
                   </Link>
-                </li>
-                <li>
                   <Link
-                    href="#"
-                    className="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 "
+                    href="/my-courses"
+                    className="block px-4 py-2 text-gray-800 hover:bg-gray-100"
                   >
-                    Courses
+                    My Courses
                   </Link>
-                </li>
-                <li>
-                  <Link
-                    href="#"
-                    className="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 "
+                  <button
+                    onClick={() => {
+                      signOut();
+                      setIsDropdownOpen(false);
+                    }}
+                    className="block w-full text-left px-4 py-2 text-gray-800 hover:bg-gray-100"
                   >
-                    Services
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="#"
-                    className="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 "
-                  >
-                    Contact
-                  </Link>
-                </li>
-              </ul>
+                    Sign Out
+                  </button>
+                </div>
+              )}
             </div>
-          </div>
-        </nav>
-      </div>
+          ) : (
+            <Link href="/login" className="hover:underline" prefetch={false}>
+              Sign In
+            </Link>
+          )}
+        </div>
+      </header>
     </>
+  );
+}
+
+function PlayIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <polygon points="6 3 20 12 6 21 6 3" />
+    </svg>
   );
 }

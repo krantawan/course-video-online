@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "Course" ALTER COLUMN "preview" DROP NOT NULL,
+ALTER COLUMN "preview" DROP DEFAULT;
