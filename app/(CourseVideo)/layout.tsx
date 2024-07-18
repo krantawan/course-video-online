@@ -5,7 +5,7 @@ import Footer from "./components/Footer";
 import "./globals.css";
 import "@smastrom/react-rating/style.css";
 
-import SessionProvider from "./SessionProvider";
+import SessionProvider from "../SessionProvider";
 import { getServerSession } from "next-auth";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -23,9 +23,11 @@ export default async function RootLayout({
   const session = await getServerSession();
   return (
     <html lang="en">
-      <body className={`${inter.className}`}>
+      <body className={`${inter.className} flex flex-col min-h-screen`}>
         <SessionProvider session={session}>
+          <Navbar />
           <main className="flex-grow">{children}</main>
+          <Footer />
         </SessionProvider>
       </body>
     </html>

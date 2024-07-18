@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    const UserId = session.user.id;
+    const UserId = Number(session.user.id);
 
     const UserResponse = await prisma.user.findFirst({
       where: {
