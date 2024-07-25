@@ -6,6 +6,7 @@ import Avatar from "/public/avatar_default.png";
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import YoutubePlayer from "../../components/YoutubePlayer";
 
 export default function VideoCourse({ params }: { params: { id: string } }) {
   const { id } = params;
@@ -65,16 +66,7 @@ export default function VideoCourse({ params }: { params: { id: string } }) {
       <div className="container flex flex-col gap-8 w-full mx-auto py-12 px-4 md:px-6">
         <div className="rounded-lg overflow-hidden aspect-video relative ">
           <div className="w-full h-full object-cover">
-            <iframe
-              width="560"
-              height="315"
-              src={`https://www.youtube.com/embed/${video.videoUrl}`}
-              title="YouTube video player"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-              referrerPolicy="strict-origin-when-cross-origin"
-              allowFullScreen
-              className="w-full h-full"
-            ></iframe>
+            <YoutubePlayer videoId={video.videoUrl} />
           </div>
         </div>
         <div className="grid gap-6 md:grid-cols-[2fr_1fr]">
@@ -128,7 +120,17 @@ export default function VideoCourse({ params }: { params: { id: string } }) {
                       <div className="font-medium line-clamp-2">
                         {chapter.title}
                       </div>
-                      <div className="text-sm text-gray-500">{} • 45 min</div>
+                      <div className="text-sm text-gray-500">
+                        {chapter.duration > 60 ? (
+                          <>
+                            {Math.floor(chapter.duration / 60)}
+                            {"."}
+                            {(chapter.duration % 60).toFixed(2)} hr
+                          </>
+                        ) : (
+                          <>{chapter.duration} min</>
+                        )}{" "}
+                      </div>
                     </div>
                   </Link>
                 )

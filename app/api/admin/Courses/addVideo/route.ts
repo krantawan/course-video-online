@@ -26,18 +26,43 @@ export async function POST(request: Request) {
 
   try {
     const body = await request.json();
-    const { title, description, image, preview } = body;
-    const userId = Number(session.user.id);
+    const { title, video, courseId, duration, description } = body;
 
-    await prisma.course.create({
+    // console.log(
+    //   "Received data:",
+    //   title,
+    //   video,
+    //   courseId,
+    //   duration,
+    //   description
+    // );
+
+    const existingVideo = await prisma.courseSession.findUnique({
+      where: {
+        videoUrl: video,
+      },
+    });
+
+    if (existingVideo) {
+      return new NextResponse(
+        JSON.stringify({
+          message: "Video URL already exists",
+        }),
+        {
+          status: 409,
+        }
+      );
+    }
+
+    await prisma.courseSession.create({
       data: {
         title,
         description,
-        image,
-        preview,
-        Instructor: {
+        duration,
+        videoUrl: video,
+        course: {
           connect: {
-            id: userId,
+            id: courseId,
           },
         },
       },
@@ -45,13 +70,14 @@ export async function POST(request: Request) {
 
     return new NextResponse(
       JSON.stringify({
-        message: "Course added successfully",
+        message: "Video added successfully",
       }),
       {
         status: 200,
       }
     );
   } catch (error) {
-    console.log(error);
+    console.error("Error creating course session:", error);
+    return new NextResponse("Internal Server Error", { status: 500 });
   }
 }

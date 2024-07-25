@@ -55,10 +55,16 @@ export default function CourseManagement() {
       )}
 
       <Link
-        className="bg-green-500 text-white py-1 px-2 rounded text-lg hover:bg-green-600"
+        className="m-1 bg-green-500 text-white py-1 px-2 rounded text-lg hover:bg-green-600"
         href="/admin/CourseManagement/add"
       >
         Add Course
+      </Link>
+      <Link
+        className="m-1 bg-orange-500 text-white py-1 px-2 rounded text-lg hover:bg-orange-600"
+        href="/admin/CourseManagement/video/add"
+      >
+        Add Video
       </Link>
       <table className="min-w-full bg-white mt-2">
         <thead>
@@ -77,13 +83,13 @@ export default function CourseManagement() {
               <td className="border px-4 py-2">{course.Instructor?.name}</td>
               <td className="border px-4 py-2">
                 <Link
-                  className="bg-blue-500 text-white py-1 px-2 rounded"
+                  className="bg-blue-500 text-white p-2 rounded"
                   href={`/admin/CourseManagement/edit/${course.id}`}
                 >
                   Edit
                 </Link>
                 <button
-                  className="bg-red-500 text-white py-1 px-2 rounded"
+                  className="bg-red-500 text-white p-2 rounded"
                   onClick={() => {
                     deleteCourse(course.id);
                     handleDeleteSuccess();
