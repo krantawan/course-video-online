@@ -23,29 +23,24 @@ export default function VideoCourse({ params }: { params: { id: string } }) {
       });
 
       setVideo(response.data);
-      //console.log("Video response:", response.data);
 
-      // Check if the user is enrolled in the course
       if (response.data.course?.enrollments) {
         const isUserEnrolled = response.data.course.enrollments.some(
           (enrollment: { userId: number }) =>
             enrollment.userId === Number(userId)
         );
 
-        //console.log("Session user ID:", userId);
-        //console.log("isUserEnrolled:", isUserEnrolled);
-
         if (!isUserEnrolled) {
-          router.push("/access-denied"); // Redirect to access denied page
+          router.push("/access-denied");
           return;
         }
       } else {
         console.log("User not enrolled");
-        router.push("/access-denied"); // Redirect to access denied page
+        router.push("/access-denied");
       }
     } catch (error) {
       console.log(error);
-      router.push("/error"); // Redirect to an error page
+      router.push("/error");
     }
   };
 
@@ -58,7 +53,7 @@ export default function VideoCourse({ params }: { params: { id: string } }) {
   }, [id, status, session?.user?.id]);
 
   if (status === "loading" || !video) {
-    return null;
+    return <p>Loading...</p>;
   }
 
   return (

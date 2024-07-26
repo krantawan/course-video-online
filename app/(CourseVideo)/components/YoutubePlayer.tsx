@@ -1,23 +1,29 @@
 import React, { useEffect, useRef } from "react";
 
-interface VideoPlayerProps {
+interface YoutubePlayerProps {
   videoId: string;
 }
 
-const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoId }) => {
+const YoutubePlayer: React.FC<YoutubePlayerProps> = ({ videoId }) => {
   const playerRef = useRef<YT.Player | null>(null);
 
   useEffect(() => {
-    // Load YouTube IFrame API script
-    const tag = document.createElement("script");
-    tag.src = "https://www.youtube.com/iframe_api";
-    const firstScriptTag = document.getElementsByTagName("script")[0];
-    if (firstScriptTag && firstScriptTag.parentNode) {
-      firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-    }
+    const loadYoutubeAPI = () => {
+      return new Promise<void>((resolve) => {
+        if (window.YT && window.YT.Player) {
+          resolve();
+          return;
+        }
 
-    // Create YouTube player after API script is loaded
-    (window as any).onYouTubeIframeAPIReady = () => {
+        const scriptTag = document.createElement("script");
+        scriptTag.src = "https://www.youtube.com/iframe_api";
+        scriptTag.onload = () => resolve();
+        document.head.appendChild(scriptTag);
+      });
+    };
+
+    const onYouTubeIframeAPIReady = () => {
+      console.log("YouTube IFrame API is ready");
       playerRef.current = new window.YT.Player("youtube-player", {
         height: "315",
         width: "560",
@@ -32,6 +38,21 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoId }) => {
         },
       });
     };
+
+    loadYoutubeAPI().then(() => {
+      if (window.YT && window.YT.Player) {
+        onYouTubeIframeAPIReady();
+      } else {
+        (window as any).onYouTubeIframeAPIReady = onYouTubeIframeAPIReady;
+      }
+    });
+
+    return () => {
+      if (playerRef.current) {
+        playerRef.current.destroy();
+        playerRef.current = null;
+      }
+    };
   }, [videoId]);
 
   const onPlayerReady = (event: YT.PlayerEvent) => {
@@ -45,4 +66,4 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoId }) => {
   return <div id="youtube-player" className="w-full h-full"></div>;
 };
 
-export default VideoPlayer;
+export default YoutubePlayer;

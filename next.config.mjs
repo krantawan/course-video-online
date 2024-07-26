@@ -15,6 +15,12 @@ const nextConfig = {
       },
     ],
   },
+  webpack: (config, options) => {
+    if (!options.dev) {
+      config.devtool = false;
+    }
+    return config;
+  },
   reactStrictMode: true,
 };
 
