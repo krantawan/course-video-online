@@ -184,7 +184,12 @@ export default function Courses({ params }: { params: { id: string } }) {
                           </div>
                           <div className="text-gray-600">
                             {Number(sessionCourse.duration) > 60 ? (
-                              <p>{Number(sessionCourse.duration) / 60} hours</p>
+                              <p>
+                                {(Number(sessionCourse.duration) / 60).toFixed(
+                                  2
+                                )}{" "}
+                                hours
+                              </p>
                             ) : (
                               <p>{sessionCourse.duration} minutes</p>
                             )}

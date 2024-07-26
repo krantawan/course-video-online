@@ -79,7 +79,13 @@ export default function CourseManagement() {
           {courses.map((course: any) => (
             <tr key={course.id}>
               <td className="border px-4 py-2">{course.id}</td>
-              <td className="border px-4 py-2">{course.title}</td>
+              <td className="border px-4 py-2">
+                <Link href={`/admin/CourseManagement/video/${course.id}`}>
+                  <p className="cursor-pointer hover:text-blue-500 hover:underline">
+                    {course.title}
+                  </p>
+                </Link>
+              </td>
               <td className="border px-4 py-2">{course.Instructor?.name}</td>
               <td className="border px-4 py-2">
                 <Link
