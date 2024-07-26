@@ -67,11 +67,19 @@ export async function DELETE(request: NextRequest, { params }: any) {
     });
   }
 
-  const deletCourseId = Number(params.id);
-
+  const deleteCourseId = Number(params.id);
+  console.log("deleteCourseId", deleteCourseId);
   try {
+    await prisma.courseSession.deleteMany({
+      where: { courseId: deleteCourseId },
+    });
+
     await prisma.course.delete({
-      where: { id: deletCourseId },
+      where: { id: deleteCourseId },
+    });
+
+    await prisma.review.deleteMany({
+      where: { courseId: deleteCourseId },
     });
 
     return new NextResponse(
