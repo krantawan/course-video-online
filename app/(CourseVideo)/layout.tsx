@@ -5,7 +5,7 @@ import Footer from "./components/Footer";
 import "./globals.css";
 import "@smastrom/react-rating/style.css";
 
-import SessionProvider from "./SessionProvider";
+import SessionProvider from "../SessionProvider";
 import { getServerSession } from "next-auth";
 
 const inter = Inter({ subsets: ["latin"] });

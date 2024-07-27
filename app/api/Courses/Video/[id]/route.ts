@@ -49,8 +49,9 @@ export async function GET(
       };
     }
     //console.log(course);
-    return Response.json(course);
+    return new NextResponse(JSON.stringify(course), { status: 201 });
   } catch (error) {
     console.log(error);
+    return new NextResponse("Internal Server Error", { status: 500 });
   }
 }

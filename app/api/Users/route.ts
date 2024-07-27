@@ -1,7 +1,7 @@
 import { getServerSession } from "next-auth";
 import { PrismaClient } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/app/api/auth/[...nextauth]/authOptions";
 
 const prisma = new PrismaClient();
 export async function GET(request: NextRequest) {
@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    const UserId = session.user.id;
+    const UserId = Number(session.user.id);
 
     const UserResponse = await prisma.user.findFirst({
       where: {

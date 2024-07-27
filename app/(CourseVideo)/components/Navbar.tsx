@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
 import { useState } from "react";
-import Avatar from "../../public/avatar_default.png";
+import Avatar from "/public/avatar_default.png";
 import { usePathname } from "next/navigation";
 
 export default function Navbar() {
@@ -74,7 +74,15 @@ export default function Navbar() {
                 />
               </button>
               {isDropdownOpen && (
-                <div className="absolute right-0 mt-2 w-48 bg-white border rounded shadow-md">
+                <div className="absolute right-0 mt-2 w-48 bg-white border rounded shadow-md z-10">
+                  {session.user.role === "admin" && (
+                    <Link
+                      href="/admin"
+                      className="block px-4 py-2 text-gray-800 hover:bg-gray-100"
+                    >
+                      Admin
+                    </Link>
+                  )}
                   <Link
                     href="/profile"
                     className="block px-4 py-2 text-gray-800 hover:bg-gray-100"

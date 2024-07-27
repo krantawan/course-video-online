@@ -2,6 +2,8 @@
 const nextConfig = {
   env: {
     API_SECRET_KEY: process.env.API_SECRET_KEY,
+    NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
+    YOUTUBE_API_KEY: process.env.YOUTUBE_API_KEY,
   },
   images: {
     remotePatterns: [
@@ -13,6 +15,13 @@ const nextConfig = {
       },
     ],
   },
+  webpack: (config, options) => {
+    if (!options.dev) {
+      config.devtool = false;
+    }
+    return config;
+  },
+  reactStrictMode: true,
 };
 
 export default nextConfig;
