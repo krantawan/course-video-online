@@ -2,10 +2,12 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 
 export default function ListVideo({ params }: { params: { id: string } }) {
   const { id } = params;
-  const [video, setVideos] = useState<any[]>([]);
+  const [videos, setVideos] = useState<any[]>([]);
+  const [alert, setAlert] = useState<string | null>(null);
 
   const fetchVideoById = async (id: string) => {
     try {
@@ -14,7 +16,6 @@ export default function ListVideo({ params }: { params: { id: string } }) {
           Authorization: `Bearer ${process.env.API_SECRET_KEY}`,
         },
       });
-      //console.log(response.data.courseSessions);
       setVideos(response.data.courseSessions || []);
     } catch (error) {
       console.error(error);
@@ -25,35 +26,89 @@ export default function ListVideo({ params }: { params: { id: string } }) {
     fetchVideoById(id);
   }, [id]);
 
+  const handleOnDragEnd = async (result: any) => {
+    if (!result.destination) return;
+
+    const items = Array.from(videos);
+    const [reorderedItem] = items.splice(result.source.index, 1);
+    items.splice(result.destination.index, 0, reorderedItem);
+
+    setVideos(items);
+
+    try {
+      const response = await axios.put(
+        `/api/admin/Courses/update/${id}`,
+        {
+          order: items.map((item, index) => ({
+            id: item.id,
+            order: index + 1,
+          })),
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${process.env.API_SECRET_KEY}`,
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        setAlert(response.data.message);
+        setTimeout(() => setAlert(null), 3000);
+      }
+    } catch (error) {
+      console.error("Failed to update order", error);
+    }
+  };
+
   return (
     <div className="p-4">
       <h1 className="text-2xl font-bold mb-4">List Video Courses : {id}</h1>
 
-      <table className="min-w-full bg-white mt-2">
-        <thead>
-          <tr>
-            <th className="py-2 px-4">ID</th>
-            <th className="py-2 px-4">Title Video</th>
-            <th className="py-2 px-4">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {video.map((chapter: any, index: number) => (
-            <tr key={index}>
-              <td className="py-2 px-4">{chapter.id}</td>
-              <td className="py-2 px-4">{chapter.title}</td>
-              <td className="py-2 px-4">
-                <Link
-                  href={`/video/${chapter.videoUrl}`}
-                  className="bg-blue-500 text-white font-semibold py-2 px-4 rounded"
+      {alert && (
+        <p className="text-green-600 mb-4 border border-green-600 rounded-md bg-green-50 p-2">
+          {alert}
+        </p>
+      )}
+
+      <DragDropContext onDragEnd={handleOnDragEnd}>
+        <Droppable droppableId="videos">
+          {(provided) => (
+            <div
+              {...provided.droppableProps}
+              ref={provided.innerRef}
+              className="bg-white mt-2"
+            >
+              {videos.map((chapter, index) => (
+                <Draggable
+                  key={chapter.id}
+                  draggableId={String(chapter.id)}
+                  index={index}
                 >
-                  View
-                </Link>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+                  {(provided) => (
+                    <div
+                      ref={provided.innerRef}
+                      {...provided.draggableProps}
+                      {...provided.dragHandleProps}
+                      className="py-2 px-4 border-b"
+                    >
+                      <div className="flex justify-between items-center">
+                        <span>{chapter.title}</span>
+                        <Link
+                          href={`/video/${chapter.videoUrl}`}
+                          className="bg-blue-500 text-white font-semibold py-2 px-4 rounded"
+                        >
+                          View
+                        </Link>
+                      </div>
+                    </div>
+                  )}
+                </Draggable>
+              ))}
+              {provided.placeholder}
+            </div>
+          )}
+        </Droppable>
+      </DragDropContext>
     </div>
   );
 }

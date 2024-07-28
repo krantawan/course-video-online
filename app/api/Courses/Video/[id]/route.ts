@@ -31,7 +31,9 @@ export async function GET(
                 image: true,
               },
             },
-            courseSessions: true,
+            courseSessions: {
+              orderBy: { order: "asc" },
+            },
             enrollments: {
               select: {
                 userId: true,
