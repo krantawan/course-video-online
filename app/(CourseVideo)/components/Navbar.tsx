@@ -6,6 +6,13 @@ import { useState } from "react";
 import Avatar from "/public/avatar_default.png";
 import { usePathname } from "next/navigation";
 
+const NavData = [
+  { href: "/", label: "Courses" },
+  { href: "/about", label: "About" },
+  { href: "/contact", label: "Contact" },
+  { href: "/privacy", label: "Privacy" },
+];
+
 export default function Navbar() {
   const { data: session, status } = useSession();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -34,34 +41,15 @@ export default function Navbar() {
             <span className="text-xl font-bold">Video Courses</span>
           </Link>
           <nav className="hidden md:flex items-center gap-6">
-            <Link
-              href="/"
-              className={`nav-link ${isActive("/") ? "active" : ""}`}
-              prefetch={false}
-            >
-              Courses
-            </Link>
-            <Link
-              href="/about"
-              className={`nav-link ${isActive("/about") ? "active" : ""}`}
-              prefetch={false}
-            >
-              About
-            </Link>
-            <Link
-              href="/contact"
-              className={`nav-link ${isActive("/contact") ? "active" : ""}`}
-              prefetch={false}
-            >
-              Contact
-            </Link>
-            <Link
-              href="/privacy"
-              className={`nav-link ${isActive("/privacy") ? "active" : ""}`}
-              prefetch={false}
-            >
-              Privacy
-            </Link>
+            {NavData.map(({ href, label }) => (
+              <Link
+                key={label}
+                href={href}
+                className={`nav-link ${isActive(href) ? "active" : ""}`}
+              >
+                {label}
+              </Link>
+            ))}
           </nav>
 
           {status === "authenticated" && session.user ? (
