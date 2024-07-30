@@ -14,9 +14,10 @@ export default function AddVideo() {
   const [courseId, setCourseId] = useState(0);
   const [video, setVideo] = useState("");
   const [description, setDescription] = useState("");
-  const [alertType, setAlertType] = useState("");
 
+  const [alertType, setAlertType] = useState("");
   const [alert, setAlert] = useState("");
+
   const router = useRouter();
 
   const fetchCourses = async () => {
@@ -58,13 +59,13 @@ export default function AddVideo() {
         }
       );
 
-      console.log("API Response:", response.status);
+      //console.log("API Response:", response.status);
 
       if (response.status === 200) {
         setAlert("Video added successfully");
         setAlertType("success");
         setTimeout(() => {
-          router.push(`/admin/CourseManagement`);
+          router.push(`/admin/CourseManagement/video/${courseId}`);
         }, 2000);
       }
     } catch (error) {

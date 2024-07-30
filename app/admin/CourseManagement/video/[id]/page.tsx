@@ -93,12 +93,20 @@ export default function ListVideo({ params }: { params: { id: string } }) {
                     >
                       <div className="flex justify-between items-center">
                         <span>{chapter.title}</span>
-                        <Link
-                          href={`/video/${chapter.videoUrl}`}
-                          className="bg-blue-500 text-white font-semibold py-2 px-4 rounded"
-                        >
-                          View
-                        </Link>
+                        <div className="flex gap-2">
+                          <Link
+                            href={`/admin/CourseManagement/video/edit/${chapter.id}`}
+                            className="bg-green-500 text-white py-2 px-4 rounded"
+                          >
+                            Edit
+                          </Link>
+                          <Link
+                            href={`/video/${chapter.videoUrl}`}
+                            className="bg-blue-500 text-white py-2 px-4 rounded "
+                          >
+                            View
+                          </Link>
+                        </div>
                       </div>
                     </div>
                   )}

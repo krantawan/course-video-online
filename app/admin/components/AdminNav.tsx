@@ -23,16 +23,16 @@ export default function AdminNav() {
 
   return (
     <aside className="w-64 bg-white shadow-lg hidden md:block">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold">Admin Panel</h1>
+      <div className="mt-2">
+        <h1 className="text-2xl p-4  text-center">Admin Panel</h1>
       </div>
       <nav>
-        <ul>
+        <ul className="grid grid-cols-1 gap-2">
           {NavData.map(({ href, label }) => (
             <Link
               key={href}
               href={href}
-              className={`text-lg text-gray-700 block mb-2 ${
+              className={`text-lg text-gray-700 block ${
                 isActive(href)
                   ? "border-r-4 border-indigo-500 bg-slate-50"
                   : "hover:bg-slate-50"
