@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import axios from "axios";
+import Link from "next/link";
 export default function UserManagement() {
   const [users, setUsers] = useState([]);
 
@@ -42,9 +43,12 @@ export default function UserManagement() {
               <td className="border px-4 py-2">{user.email}</td>
               <td className="border px-4 py-2">{user.role}</td>
               <td className="border px-4 py-2">
-                <button className="bg-blue-500 text-white py-1 px-2 rounded">
+                <Link
+                  href={`/admin/UserManagement/edit/${user.id}`}
+                  className="bg-blue-500 text-white py-1 px-2 rounded"
+                >
                   Edit
-                </button>
+                </Link>
                 <button className="bg-red-500 text-white py-1 px-2 rounded ml-2">
                   Delete
                 </button>

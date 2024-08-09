@@ -22,7 +22,7 @@ export default function AdminBreadcrumb() {
         {breadcrumbs.map((path, index) => {
           const href = `/${breadcrumbs.slice(0, index + 1).join("/")}`;
           return (
-            <div className="flex items-center">
+            <div className="flex items-center" key={index + "_breadcrumb"}>
               <svg
                 className="rtl:rotate-180 w-3 h-3 text-gray-400 mx-1"
                 aria-hidden="true"
@@ -32,9 +32,9 @@ export default function AdminBreadcrumb() {
               >
                 <path
                   stroke="currentColor"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
                   d="m1 9 4-4-4-4"
                 />
               </svg>
