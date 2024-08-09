@@ -21,7 +21,9 @@ export async function GET(
     const course = await prisma.course.findUnique({
       where: { id: courseId },
       include: {
-        courseSessions: true,
+        courseSessions: {
+          orderBy: { order: "asc" },
+        },
         Instructor: {
           select: {
             name: true,

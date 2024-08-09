@@ -33,6 +33,7 @@ export async function GET(request: NextRequest) {
       select: {
         name: true,
         email: true,
+        image: true,
         enrollments: {
           select: {
             course: {

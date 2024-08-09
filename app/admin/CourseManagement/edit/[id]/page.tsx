@@ -10,6 +10,7 @@ export default function EditCourse({ params }: { params: { id: string } }) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [image, setImage] = useState("");
+  const [disabled, setDisabled] = useState(false);
   const [alert, setAlert] = useState("");
   const router = useRouter();
 
@@ -29,6 +30,7 @@ export default function EditCourse({ params }: { params: { id: string } }) {
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    setDisabled(true);
     e.preventDefault();
     try {
       const response = await axios.put(
@@ -47,6 +49,10 @@ export default function EditCourse({ params }: { params: { id: string } }) {
 
       if (response.status === 200) {
         setAlert(response.data.message);
+        setTimeout(() => {
+          setAlert("");
+          setDisabled(false);
+        }, 3000);
         router.push(`/admin/CourseManagement/edit/${id}`);
       }
     } catch (error) {
@@ -83,6 +89,7 @@ export default function EditCourse({ params }: { params: { id: string } }) {
             onChange={(e) => setTitle(e.target.value)}
             className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
             required
+            disabled={disabled}
           />
         </div>
         <div className="mb-4">
@@ -100,6 +107,7 @@ export default function EditCourse({ params }: { params: { id: string } }) {
             className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
             rows={10}
             required
+            disabled={disabled}
           />
         </div>
         <div className="mb-4">
@@ -117,11 +125,13 @@ export default function EditCourse({ params }: { params: { id: string } }) {
             onChange={(e) => setImage(e.target.value)}
             className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
             required
+            disabled={disabled}
           />
         </div>
         <button
           type="submit"
           className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+          disabled={disabled}
         >
           Save Changes
         </button>

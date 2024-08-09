@@ -22,6 +22,7 @@ export async function POST(
     const courseId = Number(params.id);
     const userId = Number(session.user.id);
 
+    //console.log("courseId : ", courseId, "userId :", userId);
     const courseEnroll = await prisma.courseEnrollment.create({
       data: {
         userId: userId,

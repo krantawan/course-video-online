@@ -28,6 +28,14 @@ export async function POST(request: Request) {
     const body = await request.json();
     const { title, video, courseId, duration, description } = body;
 
+    const maxOrder = await prisma.courseSession.findFirst({
+      where: { courseId },
+      orderBy: { order: "desc" },
+      select: { order: true },
+    });
+
+    const newOrder = maxOrder ? maxOrder.order + 1 : 1;
+
     // console.log(
     //   "Received data:",
     //   title,
@@ -65,6 +73,7 @@ export async function POST(request: Request) {
             id: courseId,
           },
         },
+        order: newOrder,
       },
     });
 
