@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -13,25 +7,103 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
 model User {
-  id        Int           @id @default(autoincrement())
-  name      String?
-  email     String        @unique
-  password  String?
-  createdAt DateTime      @default(now())
-  updatedAt DateTime      @updatedAt
-  courses   VideoCourse[]
+  id            Int                @id @default(autoincrement())
+  name          String?
+  email         String             @unique
+  password      String?
+  image         String?
+  role          String             @default("member")
+  emailVerified DateTime?
+  createdAt     DateTime           @default(now())
+  updatedAt     DateTime           @default(now()) @updatedAt
+  enrollments   CourseEnrollment[]
+  accounts      Account[]
+  sessions      Session[]
+  reviews       Review[]
+  Course        Course[]
 }
 
-model VideoCourse {
-  id          Int       @id @default(autoincrement())
+model Account {
+  id                Int     @id @default(autoincrement())
+  userId            Int
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           Int      @id @default(autoincrement())
+  sessionToken String   @unique
+  userId       Int
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Course {
+  id             Int                @id @default(autoincrement())
+  title          String
+  description    String
+  image          String
+  preview        String?
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+  courseSessions CourseSession[]
+  enrollments    CourseEnrollment[]
+  reviews        Review[]
+  InstructorId   Int?
+  Instructor     User?              @relation(fields: [InstructorId], references: [id])
+}
+
+model CourseSession {
+  id          Int     @id @default(autoincrement())
   title       String
-  description String
-  image       String
-  videoUrl    String
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  userId      Int
-  user        User      @relation(fields: [userId], references: [id])
+  videoUrl    String  @unique
+  description String?
+  duration    String?
+  courseId    Int
+  course      Course  @relation(fields: [courseId], references: [id])
+  order       Int     @default(0)
+}
+
+model CourseEnrollment {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  courseId  Int
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+  course    Course   @relation(fields: [courseId], references: [id])
+
+  @@unique([userId, courseId])
+}
+
+model Review {
+  id        Int      @id @default(autoincrement())
+  rating    Int
+  comment   String
+  courseId  Int
+  createdAt DateTime @default(now())
+  course    Course   @relation(fields: [courseId], references: [id])
+  User      User?    @relation(fields: [userId], references: [id])
+  userId    Int?
 }

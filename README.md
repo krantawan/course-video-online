@@ -1,36 +1,64 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
-## Getting Started
+# Course Video Online
 
-First, run the development server:
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Table of Contents
+- [Introduction](#introduction)
+- [Features](#features)
+- [Technologies Used](#technologies-used)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Contributing](#contributing)
+- [License](#license)
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Introduction
+Course Video Online is a web application designed to provide an online platform for managing and viewing course videos. It allows users to authenticate using Google OAuth and manage their courses seamlessly.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Features
+- User authentication with Google OAuth
+- Credential-based login
+- Course management
+- Video streaming
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+## Technologies Used
+- **Next.js 14**: A React framework for production
+- **NextAuth**: Authentication for Next.js
+- **Tailwind CSS**: Utility-first CSS framework
+- **Prisma**: Next-generation ORM
+- **PostgreSQL**: Open-source relational database
+- **Docker Compose**: Tool for defining and running multi-container Docker applications
 
-## Learn More
+## Installation
+### Prerequisites
+- Node.js
+- Docker
+- Docker Compose
 
-To learn more about Next.js, take a look at the following resources:
+### Steps
+1. Clone the repository:
+    ```bash
+    git clone https://github.com/krantawan/course-video-online.git
+    cd course-video-online
+    ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+2. Install dependencies:
+    ```bash
+    npm install
+    ```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+3. Create an `.env` file based on the `.env.example` file and configure the environment variables.
 
-## Deploy on Vercel
+4. Start the application using Docker Compose:
+    ```bash
+    docker-compose up
+    ```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+5. Open your browser and navigate to `http://localhost:3000`.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+## Usage
+1. Sign in using your Google account
+2. Manage your courses by adding, editing, or removing course videos.
+3. View and stream course videos directly from the platform.
+
+
